@@ -3,18 +3,18 @@ package com.cesoft.cesnostr.home.vmi
 import com.adidas.mvi.sideeffects.SideEffects
 import com.adidas.mvi.transform.SideEffectTransform
 import com.adidas.mvi.transform.ViewTransform
-import rust.nostr.protocol.Event
+import rust.nostr.sdk.Event
 
 internal object HomeTransform {
 
-    data object Wait : ViewTransform<HomeState, HomeSideEffect>() {
-        override fun mutate(currentState: HomeState): HomeState {
-            if (currentState is HomeState.Init)
-                return currentState.copy(wait = true)
-            else
-                return currentState
-        }
-    }
+//    data object Wait : ViewTransform<HomeState, HomeSideEffect>() {
+//        override fun mutate(currentState: HomeState): HomeState {
+//            if (currentState is HomeState.Init)
+//                return currentState.copy(wait = true)
+//            else
+//                return currentState
+//        }
+//    }
 
     data class GoInit(
         val events: List<Event> = listOf(),

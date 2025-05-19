@@ -66,7 +66,7 @@ dependencies {
 
     /// Nostr
     implementation(libs.nostr.sdk)
-    implementation("net.java.dev.jna:jna:5.17.0@aar")//Don't replace with catalog, problem with @aar
+    //implementation("net.java.dev.jna:jna:5.17.0@aar")//Don't replace with catalog, problem with @aar
 
     // DI
     implementation(libs.hilt.android)

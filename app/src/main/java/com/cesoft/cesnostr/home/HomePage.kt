@@ -1,6 +1,5 @@
 package com.cesoft.cesnostr.home
 
-import android.app.usage.UsageEvents
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,11 +35,11 @@ import com.cesoft.cesnostr.common.LoadingCompo
 import com.cesoft.cesnostr.home.vmi.HomeIntent
 import com.cesoft.cesnostr.home.vmi.HomeState
 import com.cesoft.cesnostr.R
+import com.cesoft.cesnostr.common.LinkifyText
 import com.cesoft.cesnostr.message
 import com.cesoft.cesnostr.ui.theme.SepMax
 import com.cesoft.cesnostr.ui.theme.SepMed
-import com.cesoft.domain.entity.parseEventKind
-import rust.nostr.protocol.Event
+import rust.nostr.sdk.Event
 
 
 private val TitleHeight = 50.dp
@@ -155,11 +154,15 @@ private fun EventList(events: List<Event>) {
         for(e in events) {
             item {
                 Column {
-                    HorizontalDivider()
+                    HorizontalDivider(
+                        modifier = Modifier.height(5.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
                     Text("Fecha: "+e.createdAt().toHumanDatetime())
-                    Text("Tipo:  ("+e.kind()+") "+parseEventKind(e.kind()))
-                    Text("Autor: "+e.author().toNostrUri())
-                    Text(e.content())
+                    Text("Tipo:  "+e.kind()+"("+ e.kind().asStd()?.name+")")
+                    //Text("Autor: "+e.author().toNostrUri())
+                    HorizontalDivider()
+                    LinkifyText(e.content())
                 }
             }
         }

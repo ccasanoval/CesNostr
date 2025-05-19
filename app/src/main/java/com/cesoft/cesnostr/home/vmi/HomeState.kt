@@ -1,7 +1,7 @@
 package com.cesoft.cesnostr.home.vmi
 
 import com.adidas.mvi.LoggableState
-import rust.nostr.protocol.Event
+import rust.nostr.sdk.Event
 
 sealed class HomeState: LoggableState {
     data object Loading: HomeState()

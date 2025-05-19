@@ -13,17 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.cesoft.cesnostr.ui.theme.CesNostrTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.runBlocking
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Keys
-import rust.nostr.protocol.PublicKey
-import rust.nostr.protocol.Tag
-import rust.nostr.sdk.Client
-import rust.nostr.sdk.ClientSigner
-import rust.nostr.sdk.LogLevel
-import rust.nostr.sdk.initLogger
-import java.time.Duration
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
