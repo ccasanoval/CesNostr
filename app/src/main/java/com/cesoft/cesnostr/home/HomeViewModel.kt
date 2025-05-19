@@ -16,6 +16,7 @@ import com.cesoft.cesnostr.home.vmi.HomeSideEffect
 import com.cesoft.cesnostr.home.vmi.HomeState
 import com.cesoft.cesnostr.home.vmi.HomeTransform
 import com.cesoft.domain.AppError
+import com.cesoft.domain.entity.parseEventKind
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
@@ -68,37 +69,64 @@ class HomeViewModel @Inject constructor(
         emit(state)
     }
 
-    private suspend fun fetch(): HomeTransform.GoInit {
-        android.util.Log.e("AAA", "********************************************* FETCH 0")
-        initLogger(LogLevel.INFO)
-        val key = PublicKey.fromBech32("npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k")//CES
-        val keys = Keys.fromPublicKey(key)
-        android.util.Log.e("AAA", "********************************************* FETCH 1")
-        val client = Client(ClientSigner.keys(keys))
-        client.addRelay("wss://nostr.bitcoiner.social")
-        //client.addRelay("wss://nos.lol")
-        //client.addRelay("wss://nostr.mom")
-        //client.addRelay("wss://relay.damus.io")
-        client.connect()
-        android.util.Log.e("AAA", "********************************************* FETCH 5")
-        val keyBtc = PublicKey.fromBech32("npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv")
-        val filter = Filter()
-        filter.author(keyBtc)
-        val events: List<Event> = client.getEventsOf(listOf(filter), Duration.ofMillis(1000))
-        android.util.Log.e("AAA", "********************************************* EVENTS = ${events.size}")
+    private fun fetch(): HomeTransform.GoInit {
+        try {
+            android.util.Log.e("AAA", "********************************************* FETCH 0")
+            initLogger(LogLevel.INFO)
+            val key =
+                PublicKey.fromBech32("npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k")//CES
+            val keys = Keys.fromPublicKey(key)
+            val client = Client(ClientSigner.keys(keys))
+            client.addRelay("wss://nostr.bitcoiner.social")
+            //client.addRelay("wss://nos.lol")
+            //client.addRelay("wss://nostr.mom")
+            //client.addRelay("wss://relay.damus.io")
+            client.connect()
+            val keyBtc =
+                PublicKey.fromBech32("npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv")
+            val filter = Filter()
+            //val filter: Filter = Filter().kind(Kind.fromStd(KindStandard.METADATA)).limit(3u)
+            filter.author(keyBtc)
+            filter.kinds(listOf(1u))
+            val events: List<Event> = client.getEventsOf(listOf(filter), Duration.ofMillis(1000))
+            android.util.Log.e("AAA", "************************* EVENTS = ${events.size}")
+            client.close()
 
-        if(events.isNotEmpty()) {
-            return HomeTransform.GoInit(
-                events = events,
-                error = null
-            )
+            //--------------------
+            events.forEach { e ->
+                android.util.Log.e("AAA", "*********************************************")
+                //android.util.Log.e("AAA", "-------------------- id   = ${e.id()}")
+                //android.util.Log.e("AAA", "-------------------- kind = ${e.identifier()}")
+                android.util.Log.e("AAA", "-------------------- kind = ${e.kind()} ::: "+ parseEventKind(e.kind()))
+                //android.util.Log.e("AAA", "-------------------- #tag = ${e.tags().size}")
+                var tags = ""
+                for (tag in e.tags()) {
+                    for (t in tag.asVec())
+                        tags += t
+                }
+                android.util.Log.e("AAA", "----------------------- tags = ${tags}")
+                android.util.Log.e("AAA", "-------------------- auth = ${e.author().toNostrUri()}")
+                //android.util.Log.e("AAA", "-------------------- auth = ${e.author().toBech32()}")
+                android.util.Log.e("AAA", "-------------------- crat = ${e.createdAt().toHumanDatetime()}")
+                android.util.Log.e("AAA", "-------------------- cont = ${e.content()}")
+                //android.util.Log.e("AAA", "-------------------- vrfy = ${e.verify()}")
+                //android.util.Log.e("AAA", "-------------------- sign = ${e.signature()}")
+                android.util.Log.e("AAA", "-------------------- json = ${e.asJson()}")
+            }
+            //--------------------
+
+            if (events.isNotEmpty()) {
+                return HomeTransform.GoInit(events = events)
+            }
+            else {
+                val e = AppError.NotFound
+                Log.e(TAG, "fetch:e:---------------- $e")
+                return HomeTransform.GoInit(error = e)
+            }
         }
-        else {
-            val e = AppError.NotFound
-            Log.e(TAG, "fetch:e:---------------- $e")
-            return HomeTransform.GoInit(
-                error = e
-            )
+        catch (e: Exception) {
+            Log.e(TAG, "fetch:failure:---------------- $e")
+            return HomeTransform.GoInit(error = e)
         }
     }
 

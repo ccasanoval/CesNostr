@@ -39,6 +39,7 @@ import com.cesoft.cesnostr.R
 import com.cesoft.cesnostr.message
 import com.cesoft.cesnostr.ui.theme.SepMax
 import com.cesoft.cesnostr.ui.theme.SepMed
+import com.cesoft.domain.entity.parseEventKind
 import rust.nostr.protocol.Event
 
 
@@ -134,12 +135,12 @@ private fun HeaderTitle() {
             .height(TitleHeight)
             .padding(SepMed)
     ) {
-//        Icon(
-//            painter = painterResource(R.mipmap.ic_launcher_round),
-//            contentDescription = stringResource(R.string.app_name),
-//            tint = Color.Unspecified,
-//            modifier = Modifier.size(32.dp)
-//        )
+        Icon(
+            painter = painterResource(R.mipmap.ic_launcher_round),
+            contentDescription = stringResource(R.string.app_name),
+            tint = Color.Unspecified,
+            modifier = Modifier.size(32.dp)
+        )
         Text(
             text = stringResource(R.string.app_name),
             fontWeight = FontWeight.Bold,
@@ -155,8 +156,9 @@ private fun EventList(events: List<Event>) {
             item {
                 Column {
                     HorizontalDivider()
-                    Text(e.identifier() ?: "")
-                    Text(e.createdAt().toHumanDatetime())
+                    Text("Fecha: "+e.createdAt().toHumanDatetime())
+                    Text("Tipo:  ("+e.kind()+") "+parseEventKind(e.kind()))
+                    Text("Autor: "+e.author().toNostrUri())
                     Text(e.content())
                 }
             }
