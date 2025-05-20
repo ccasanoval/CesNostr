@@ -79,4 +79,7 @@ dependencies {
 
     /// Navigation
     implementation(libs.androidx.navigation.compose)
+
+    /// Image Loader
+    implementation(libs.coil.compose)
 }

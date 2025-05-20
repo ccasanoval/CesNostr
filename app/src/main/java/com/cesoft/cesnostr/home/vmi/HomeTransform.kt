@@ -4,6 +4,7 @@ import com.adidas.mvi.sideeffects.SideEffects
 import com.adidas.mvi.transform.SideEffectTransform
 import com.adidas.mvi.transform.ViewTransform
 import rust.nostr.sdk.Event
+import rust.nostr.sdk.Metadata
 
 internal object HomeTransform {
 
@@ -18,11 +19,13 @@ internal object HomeTransform {
 
     data class GoInit(
         val events: List<Event> = listOf(),
+        val metadata: Map<String, Metadata> = mapOf(),
         val error: Throwable? = null,
     ) : ViewTransform<HomeState, HomeSideEffect>() {
         override fun mutate(currentState: HomeState): HomeState {
             return HomeState.Init(
                 events = events,
+                metadata = metadata,
                 error = error
             )
         }
