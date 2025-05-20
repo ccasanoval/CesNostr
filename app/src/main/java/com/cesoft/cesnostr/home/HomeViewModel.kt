@@ -53,21 +53,19 @@ class HomeViewModel @Inject constructor(
         when(intent) {
             HomeIntent.Close -> executeClose()
             HomeIntent.Load -> executeLoad()
-//            is HomeIntent.ChangeAddressZipCode -> executeChangeZipCode(intent.zipCode)
+            HomeIntent.Reload -> executeReload()
         }
 
     private fun executeClose() = flow {
         emit(HomeTransform.AddSideEffect(HomeSideEffect.Close))
     }
 
-//    private fun executeChangeZipCode(zipCode: String) = flow {
-//        emit(fetch())
-//    }
+    private fun executeReload() = flow {
+        emit(HomeTransform.GoReload)
+    }
 
     private fun executeLoad() = flow {
-        Log.e("AAA", "********************************************* LOAD")
-        val state = fetch()
-        emit(state)
+        emit(fetch())
     }
 
     private suspend fun fetch(): HomeTransform.GoInit {
@@ -94,29 +92,9 @@ class HomeViewModel @Inject constructor(
                 .authors(listOf(pubKeyCes, pubKeyBtc))
                 .limit(5u)
             val metadataEvents = client.fetchEvents(filterMD, Duration.ofSeconds(1L)).toVec()
-
             metadataEvents.forEach { m ->
-                val a = Metadata.fromJson(m.content())
-                metadata[m.author().toHex()] = a
+                metadata[m.author().toHex()] = Metadata.fromJson(m.content())
                 android.util.Log.e("AA", "---------meta1: ${m.asJson()}")
-                android.util.Log.e("AA", "---------meta2: ${a.getDisplayName()} / ${m.author().toHex()}")
-                //meta: {"id":"3b3d94d7996b68dec9a9237bf1033b680421d46cc8447c93bbc7555e9e046fda",
-                //      "pubkey":"a2c580ed966ff13d295aab54f2073e2675e6e2e72d8e0711050eaf243db651c1",
-                //      "created_at":1747512474,"kind":0,"tags":[],
-                //      "content":"{
-                //          "website":"https://bitcoin.org/bitcoin.pdf",
-                //          "lud16":"flaxcat6@primal.net",
-                //          "picture":"https://blossom.primal.net/7e830d7297998db82e8e0ba409639c8581f85e99d7649208100879d84ac537d3.jpg",
-                //          "nip05":"Bitcoin@NostrVerified.com",
-                //          "display_name":"Bitcoin",
-                //          "lud06":"",
-                //          "name":"bitcoin",
-                //          "about":"Bitcoin is an open source censorship-resistant peer-to-peer immutable network. Trackable digital gold. Don’t trust; verify. Not your keys; not your coins.",
-                //          "banner":"https://blossom.primal.net/74b6896813c18781d6edc1c00472a1c7121903424a7d99606c8f99709a41e2c9.jpg"
-                //      }",
-                //      "sig":"ea123d43e1c5abefe7b09ea2f4f36f4331f3f9d3824b4f6c3279e24d854ada58a00f3fe1377c1556cc994c20a20a6b0846124fd6949dff2396e073f9de6e34a8"
-                //}
-                //meta: {
                 //      "id":"2ae631c0e256d373f87f47418fdc25fea168cd0b8c18949ad7923c18bd137ff9",
                 //      "pubkey":"cc5036ac7ef9c69eb7780e439cd5023fdefcefc06ecfdf455ca26880dfed8df1",
                 //      "created_at":1745489671,"kind":0,
@@ -129,7 +107,6 @@ class HomeViewModel @Inject constructor(
                 //          "lud16":"wordybritish81@walletofsatoshi.com",
                 //          "banner":"https://cortados.freevar.com"}",
                 //          "sig":"94c21c13ddf9a31f1d5571555a095b79271d3ff5b650fda70b3219bf572904d73b98953f8583cda79fd4c10e341dffe0d23768bbcee00b55cb59824f7d5d0a0c"
-                //}
             }
 
             val filter = Filter()

@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -23,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -35,11 +37,11 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.adidas.mvi.compose.MviScreen
+import com.cesoft.cesnostr.R
+import com.cesoft.cesnostr.common.LinkifyText
 import com.cesoft.cesnostr.common.LoadingCompo
 import com.cesoft.cesnostr.home.vmi.HomeIntent
 import com.cesoft.cesnostr.home.vmi.HomeState
-import com.cesoft.cesnostr.R
-import com.cesoft.cesnostr.common.LinkifyText
 import com.cesoft.cesnostr.message
 import com.cesoft.cesnostr.ui.theme.SepMax
 import com.cesoft.cesnostr.ui.theme.SepMed
@@ -47,8 +49,9 @@ import com.cesoft.cesnostr.ui.theme.SepMin
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.Metadata
 
-
 private val TitleHeight = 50.dp
+private val AuthorIconSize = 50.dp
+private val SeparatorHeight = 5.dp
 
 @Composable
 fun HomePage(
@@ -96,7 +99,7 @@ private fun Init(
         }
         else {
             HeaderTitle()
-            EventList(state.events, state.metadata)
+            EventList(state, reduce)
         }
     }
 }
@@ -154,30 +157,45 @@ private fun HeaderTitle() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EventList(
-    events: List<Event>,
-    metadata: Map<String, Metadata>
+    state: HomeState.Init,
+    reduce: (HomeIntent) -> Unit
 ) {
-    LazyColumn {
-        for(event in events) {
-            item {
-                Column {
-                    HorizontalDivider(
-                        modifier = Modifier.height(5.dp),
-                        color = MaterialTheme.colorScheme.primary
-                    )
+    val refreshState = rememberPullToRefreshState()
+    val events = state.events
+    val metadata = state.metadata
+    var isRefreshing = state.wait
+    LaunchedEffect(state) {
+        isRefreshing = state.wait
+    }
 
-                    // Author metadata
-                    AuthorMetadata(event, metadata)
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = { reduce(HomeIntent.Reload) },
+        state = refreshState
+    ) {
+        LazyColumn {
+            for (event in events) {
+                item {
+                    Column {
+                        HorizontalDivider(
+                            modifier = Modifier.height(SeparatorHeight),
+                            color = MaterialTheme.colorScheme.primary
+                        )
 
-                    // Time and type
-                    Text(event.createdAt().toHumanDatetime())
-                    Text("${event.kind()} (${event.kind().asStd()?.name})")
+                        // Author metadata
+                        AuthorMetadata(event, metadata)
 
-                    // Content
-                    HorizontalDivider()
-                    LinkifyText(event.content())
+                        // Time and type
+                        Text(event.createdAt().toHumanDatetime())
+                        Text("${event.kind()} (${event.kind().asStd()?.name})")
+
+                        // Content
+                        HorizontalDivider()
+                        LinkifyText(event.content())
+                    }
                 }
             }
         }
@@ -206,7 +224,7 @@ private fun AuthorMetadata(
                 placeholder = painterResource(android.R.drawable.ic_menu_report_image),
                 contentDescription = stringResource(R.string.app_name),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.size(50.dp),
+                modifier = Modifier.size(AuthorIconSize),
                 //colorFilter = ColorFilter.tint(Color.Unspecified)
             )
             Column(modifier = Modifier.padding(start = SepMin)) {

@@ -8,14 +8,11 @@ import rust.nostr.sdk.Metadata
 
 internal object HomeTransform {
 
-//    data object Wait : ViewTransform<HomeState, HomeSideEffect>() {
-//        override fun mutate(currentState: HomeState): HomeState {
-//            if (currentState is HomeState.Init)
-//                return currentState.copy(wait = true)
-//            else
-//                return currentState
-//        }
-//    }
+    data object GoReload : ViewTransform<HomeState, HomeSideEffect>() {
+        override fun mutate(currentState: HomeState): HomeState {
+            return HomeState.Loading
+        }
+    }
 
     data class GoInit(
         val events: List<Event> = listOf(),
