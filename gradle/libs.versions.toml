@@ -18,6 +18,8 @@ mvi = "1.8.2"
 mviCompose = "0.1.0"
 navigationCompose = "2.9.0"
 nostrSdk = "0.41.0"
+datastorePreferences = "1.1.7"
+securityCrypto = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +49,8 @@ mvi = { module = "com.adidas.mvi:mvi", version.ref = "mvi" }
 mvi-compose = { module = "com.adidas.mvi:mvi-compose", version.ref = "mviCompose" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
