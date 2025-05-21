@@ -21,18 +21,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CesNostrTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainCompose(innerPadding)
-                }
+                MainCompose()
             }
         }
     }
 
     @Composable
-    private fun MainCompose(innerPadding: PaddingValues) {
-        Surface(modifier = Modifier.padding(innerPadding)) {
-            PageNavigation()
+    private fun MainCompose() {
+        MainDrawerMenu { innerPadding ->
+            PageNavigation(innerPadding)
         }
     }
 }
-

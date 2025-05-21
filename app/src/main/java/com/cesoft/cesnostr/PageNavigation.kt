@@ -1,6 +1,9 @@
 package com.cesoft.cesnostr
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,9 +17,9 @@ sealed class Page(val route: String) {
 }
 
 @Composable
-fun PageNavigation() {
+fun PageNavigation(innerPadding: PaddingValues) {
     val navController = rememberNavController()
-    NavHost(navController, Page.Home.route) {
+    NavHost(navController, Page.Home.route, modifier = Modifier.padding(innerPadding)) {
         composable(route = Page.Home.route) {
             HomePage(navController, hiltViewModel<HomeViewModel>())
         }
