@@ -12,4 +12,5 @@ class App: Application()
 //TODO: Let user publish events
 //TODO: Let user add/delete follow authors
 //TODO: Let user add/delete relays
-//TODO: Let user refresh events
+//TODO: Let user search authors by name
+//TODO: Let user see author detailed info

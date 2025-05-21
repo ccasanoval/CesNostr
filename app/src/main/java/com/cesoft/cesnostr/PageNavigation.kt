@@ -5,7 +5,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.cesoft.cesnostr.home.HomePage
+import com.cesoft.cesnostr.home.view.HomePage
 import com.cesoft.cesnostr.home.HomeViewModel
 
 
