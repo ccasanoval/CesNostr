@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     //
-    //alias(libs.plugins.hilt)
-    //alias(libs.plugins.ksp)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -46,12 +46,11 @@ dependencies {
     /// Modules
     implementation(project(":domain"))
 
-    // DI
-    //implementation(libs.hilt.android)
-    //ksp(libs.hilt.compiler)
+    /// DI
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
 
     // Preferences
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.security.crypto)
-
 }

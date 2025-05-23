@@ -1,5 +1,5 @@
-package com.cesoft.cesnostr.home.view
-/*
+package com.cesoft.cesnostr.common
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,36 +16,39 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import com.cesoft.cesnostr.R
-import com.cesoft.cesnostr.ui.theme.SepMax
+import com.cesoft.cesnostr.home.view.TitleHeight
 import com.cesoft.cesnostr.ui.theme.SepMed
+import com.cesoft.cesnostr.ui.theme.SepMin
 
 @Composable
-internal fun HomeHeaderError(
+internal fun ErrorHeader(
     text: String,
     isErrorVisible: MutableState<Boolean>,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.inverseSurface)
+            .background(MaterialTheme.colorScheme.errorContainer)
             .fillMaxWidth()
             .height(TitleHeight)
             .padding(SepMed)
     ) {
         Text(
             text = text,
-            color = MaterialTheme.colorScheme.inversePrimary,
+            color = MaterialTheme.colorScheme.error,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .padding(start = SepMax)
+                .padding(start = SepMin)
                 .weight(.5f)
         )
         IconButton(onClick = { isErrorVisible.value = false }) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = stringResource(R.string.close),
-                tint = MaterialTheme.colorScheme.inversePrimary
+                tint = MaterialTheme.colorScheme.error
             )
         }
     }
-}*/
+}

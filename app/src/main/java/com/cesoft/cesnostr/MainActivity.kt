@@ -4,13 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import com.cesoft.cesnostr.ui.theme.CesNostrTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,15 +14,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CesNostrTheme {
-                MainCompose()
+                MainDrawerMenu { innerPadding ->
+                    PageNavigation(innerPadding)
+                }
             }
-        }
-    }
-
-    @Composable
-    private fun MainCompose() {
-        MainDrawerMenu { innerPadding ->
-            PageNavigation(innerPadding)
         }
     }
 }

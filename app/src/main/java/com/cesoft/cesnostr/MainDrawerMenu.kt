@@ -111,8 +111,8 @@ private fun Toolbar(
         topBar = {
             TopAppBar(
                 title = {
-                    val title = stringResource(R.string.app_name) + " Ver." +
-                            BuildConfig.VERSION_NAME//buildConfig = true  in buildFeatures in gradle
+                    //For using VERSION_NAME -> buildConfig = true  in buildFeatures in gradle
+                    val title = stringResource(R.string.app_name) + " " + BuildConfig.VERSION_NAME
                     Text(text = title, color = MaterialTheme.colorScheme.secondary)
                 },
                 navigationIcon = {

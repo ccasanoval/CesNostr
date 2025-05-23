@@ -13,5 +13,10 @@ sealed class AppError: Throwable() {
         private fun readResolve(): Any = NotFound
     }
 
-    companion object {}
+    data object InvalidNostrKey: AppError() {
+        private fun readResolve(): Any = InvalidNostrKey
+    }
+    data object InvalidMetadata: AppError() {
+        private fun readResolve(): Any = InvalidMetadata
+    }
 }

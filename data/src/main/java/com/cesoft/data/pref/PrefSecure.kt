@@ -29,6 +29,7 @@ fun Context.deleteSecure(key: String) {
 }
 
 /// Fields -----------------------------------------------------------------------------------------
+//NSEC
 private const val privateKeyField = "CesNostrPrivateKey"
 fun Context.setPrivateKey(token: String?) {
     token?.let {
@@ -38,4 +39,14 @@ fun Context.setPrivateKey(token: String?) {
     }
 }
 fun Context.getPrivateKey() = this.readSecure(privateKeyField)
+//NPUB
+private const val publicKeyField = "CesNostrPublicKey"
+fun Context.setPublicKey(token: String?) {
+    token?.let {
+        this.writeSecure(privateKeyField, token)
+    } ?: run {
+        this.deleteSecure(privateKeyField)
+    }
+}
+fun Context.getPublicKey() = this.readSecure(privateKeyField)
 

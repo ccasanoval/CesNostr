@@ -74,12 +74,11 @@ class HomeViewModel @Inject constructor(
             initLogger(LogLevel.INFO)
             val pubKeyCes = PublicKey.parse("npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k")//CES
             val pubKeyBtc = PublicKey.parse("npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv")
-            var privKeyCes = Keys.parse(        "nsec1j4c6269y9w0q2er2xjw8sv2ehyrtfxq3jwgdlxj6qfn8z4gjsq5qfvfk99")//fzre
-            //val privKeyCes = Keys.parse("nsec1dh2c86ga0ajrcgaye0zr53h7nnxlfe67dxqnvhmcqld62jx8rk7qnvzort")
-            //val keys = Keys.generate()
 
-            val signer = NostrSigner.keys(privKeyCes)
-            val client = Client(signer = signer)
+            //val keys = Keys.generate()
+            //val signer = NostrSigner.keys(keys)
+            //val client = Client(signer = signer)
+            val client = Client()//TODO: Use the client key saved in secure prefs!!!
             client.addRelay("wss://relay.damus.io")
             client.addRelay("wss://nostr.bitcoiner.social")
             client.addRelay("wss://nos.lol")

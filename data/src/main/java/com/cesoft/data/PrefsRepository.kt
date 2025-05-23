@@ -1,22 +1,29 @@
 package com.cesoft.data
 
 import android.content.Context
-import com.cesoft.data.pref.readBool
-import com.cesoft.data.pref.writeBool
+import com.cesoft.data.pref.deleteSecure
+import com.cesoft.data.pref.readSecure
+import com.cesoft.data.pref.writeSecure
 import com.cesoft.domain.repo.PrefsRepositoryContract
 
 class PrefsRepository(
     private val context: Context,
 ): PrefsRepositoryContract {
 
-    override suspend fun useBiometrics() = context.readBool(PREF_USE_BIOMETRICS, true)
-    override suspend fun useBiometrics(value: Boolean) = context.writeBool(PREF_USE_BIOMETRICS, value)
+    override suspend fun readPrivateKey(): String? {
+        return context.readSecure(PREF_PRIVATE_KEY)
+    }
 
-    override suspend fun showBiometricsScreen() = context.readBool(PREF_SHOW_BIOMETRICS, true)
-    override suspend fun showBiometricsScreen(value: Boolean) = context.writeBool(PREF_SHOW_BIOMETRICS, value)
+    override suspend fun writePrivateKey(value: String?) {
+        if(value.isNullOrBlank()) {
+            context.deleteSecure(PREF_PRIVATE_KEY)
+        }
+        else {
+            context.writeSecure(PREF_PRIVATE_KEY, value)
+        }
+    }
 
     companion object {
-        private const val PREF_USE_BIOMETRICS = "PrefUseBiometrics"
-        private const val PREF_SHOW_BIOMETRICS = "PrefShowBiometrics"
+        private const val PREF_PRIVATE_KEY = "CesNostrPrivateKey"
     }
 }

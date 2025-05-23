@@ -1,6 +1,5 @@
 package com.cesoft.cesnostr.common
 
-import android.os.Build
 import android.text.SpannableString
 import android.text.style.URLSpan
 import android.text.util.Linkify

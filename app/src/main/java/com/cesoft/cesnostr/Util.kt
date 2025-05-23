@@ -11,5 +11,6 @@ class Util(private var context: Context) {
 
 fun Throwable.message(context: Context) = when(this) {
     is AppError.NotFound -> context.getString(R.string.error_not_found)
-    else -> context.getString(R.string.error_unknown)
+    is AppError.UnknownError -> context.getString(R.string.error_unknown)
+    else -> "Error: $message"
 }

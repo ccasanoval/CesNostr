@@ -4,12 +4,35 @@
     <!-- Errors -->
     <string name="error_unknown">Error desconocido</string>
     <string name="error_not_found">No hay datos</string>
+    <string name="error_nostr_key">Clave Nostr incorrecta</string>
+    <string name="error_metadata">Datos del usuario no disponibles</string>
 
     <!-- Actions -->
     <string name="close">Cerrar</string>
+    <string name="start_as_guest_title">Comenzar como invitado</string>
+    <string name="start_as_guest">Entrar</string>
+    <string name="sign_in_nostr_title">Usar cuenta Nostr existente</string>
+    <string name="sign_in_nostr">Login</string>
+    <string name="create_nostr_acc_title">Crear nueva cuenta Nostr</string>
+    <string name="create_nostr_acc">Crear cuenta</string>
 
     <!-- Menu Items -->
     <string name="menu_account">Tu cuenta</string>
     <string name="menu_search">Buscar…</string>
     <string name="menu_settings">Configuración</string>
+
+    <!-- Fields -->
+    <string name="npubnsec">npub/nsec</string>
+    <string name="acc_display_name">Nombre</string>
+    <string name="acc_image">Imagen</string>
+    <string name="acc_pwd">Clave</string>
+
+    <string name="nick">Nick</string>
+    <string name="name">Nombre</string>
+    <string name="wallet">Wallet</string>
+    <string name="about">Sobre</string>
+    <string name="website">Web</string>
+    <string name="avatar">Avatar</string>
+    <string name="banner">Banner</string>
+
 </resources>
