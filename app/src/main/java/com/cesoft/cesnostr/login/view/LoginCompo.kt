@@ -22,7 +22,6 @@ import com.cesoft.cesnostr.common.ErrorHeader
 import com.cesoft.cesnostr.common.toHumanMessage
 import com.cesoft.cesnostr.login.mvi.LoginIntent
 import com.cesoft.cesnostr.login.mvi.LoginState
-import com.cesoft.cesnostr.message
 import com.cesoft.cesnostr.ui.theme.SepMax
 import com.cesoft.cesnostr.ui.theme.SepMed
 import com.cesoft.cesnostr.ui.theme.SepMin

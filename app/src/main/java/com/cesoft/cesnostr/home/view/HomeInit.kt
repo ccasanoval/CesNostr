@@ -10,7 +10,7 @@ import com.cesoft.cesnostr.common.ErrorHeader
 import com.cesoft.cesnostr.common.LoadingCompo
 import com.cesoft.cesnostr.home.vmi.HomeIntent
 import com.cesoft.cesnostr.home.vmi.HomeState
-import com.cesoft.cesnostr.message
+import com.cesoft.cesnostr.view.message
 
 @Composable
 internal fun HomeInit(

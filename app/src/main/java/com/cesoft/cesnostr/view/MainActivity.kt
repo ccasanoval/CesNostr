@@ -1,4 +1,4 @@
-package com.cesoft.cesnostr
+package com.cesoft.cesnostr.view
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

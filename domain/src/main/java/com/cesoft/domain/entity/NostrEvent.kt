@@ -1,10 +1,5 @@
 package com.cesoft.domain.entity
 
-data class AmethystDto(
-    val a: String,
-) {
-}
-
 fun parseEventKind(kind: ULong): String {
     return when(kind) {
         0uL   -> "User Metadata	        01"

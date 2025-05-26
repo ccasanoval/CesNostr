@@ -8,31 +8,27 @@ import com.adidas.mvi.MviHost
 import com.adidas.mvi.Reducer
 import com.adidas.mvi.State
 import com.adidas.mvi.reducer.Reducer
-import com.cesoft.cesnostr.Page
+import com.cesoft.cesnostr.view.Page
 import com.cesoft.cesnostr.login.mvi.LoginIntent
 import com.cesoft.cesnostr.login.mvi.LoginSideEffect
 import com.cesoft.cesnostr.login.mvi.LoginState
 import com.cesoft.cesnostr.login.mvi.LoginTransform
 import com.cesoft.domain.AppError
+import com.cesoft.domain.entity.NostrMetadata
+import com.cesoft.domain.usecase.GetUserMetadata
 import com.cesoft.domain.usecase.SavePrivateKeyUC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import rust.nostr.sdk.Client
-import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Keys
-import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindStandard
-import rust.nostr.sdk.Metadata
-import rust.nostr.sdk.NostrSigner
 import rust.nostr.sdk.PublicKey
-import java.time.Duration
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val savePrivateKey: SavePrivateKeyUC
-
+    private val savePrivateKey: SavePrivateKeyUC,
+    private val getUserMetadata: GetUserMetadata,
 ): ViewModel(), MviHost<LoginIntent, State<LoginState, LoginSideEffect>> {
     var _nsec = ""
 
@@ -69,17 +65,10 @@ class LoginViewModel @Inject constructor(
     private fun executeSignIn(nsec: String) = flow {
         try {
             val npub: PublicKey
-            val client: Client
-//            if (nsec.startsWith("npub")) {
-//                npub = PublicKey.parse(nsec)//TODO:????
-//                client = Client()
-//            }
-//            else
             if (nsec.startsWith("nsec")) {
                 val keys = Keys.parse(nsec)
                 npub = keys.publicKey()
-                val signer = NostrSigner.keys(keys)
-                client = Client(signer = signer)
+                _nsec = nsec
             }
             else {
                 android.util.Log.e(TAG, "executeSignIn------------ Wrong key: $nsec")
@@ -87,26 +76,12 @@ class LoginViewModel @Inject constructor(
                 return@flow
             }
 
-            //TODO: To use case...
-            //TODO: Bigger relay list?
-            client.addRelay("wss://nos.lol")
-            client.addRelay("wss://nostr.bitcoiner.social")
-            client.addRelay("wss://nostr.mom")
-            client.addRelay("wss://nostr.oxtr.dev")
-            client.addRelay("wss://relay.nostr.band")
-            client.addRelay("wss://relay.damus.io")
-            client.addRelay("wss://nostr.swiss-enigma.ch")
 
-
-            client.connect()
-
-            val filterMD = Filter()
-                .kind(Kind.fromStd(KindStandard.METADATA))
-                .author(npub)
-                .limit(1u)
-            val event = client.fetchEvents(filterMD, Duration.ofSeconds(1L)).toVec().first()
-            _nsec = nsec
-            emit(LoginTransform.GoSignInSuccess(metadata = Metadata.fromJson(event.content())))
+            val res: Result<NostrMetadata> = getUserMetadata(npub.toBech32())
+            if(res.isSuccess)
+                emit(LoginTransform.GoSignInSuccess(res.getOrNull()))
+            else
+                emit(LoginTransform.GoInit(res.exceptionOrNull()))
         }
         catch (e: Exception) {
             android.util.Log.e(TAG, "executeSignIn------------ e: $e \n ${e.stackTrace}")

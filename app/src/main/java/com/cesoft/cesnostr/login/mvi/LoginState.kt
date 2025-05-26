@@ -1,7 +1,7 @@
 package com.cesoft.cesnostr.login.mvi
 
 import com.adidas.mvi.LoggableState
-import rust.nostr.sdk.Metadata
+import com.cesoft.domain.entity.NostrMetadata
 
 sealed class LoginState: LoggableState {
     data class Init(
@@ -9,6 +9,6 @@ sealed class LoginState: LoggableState {
     ): LoginState()
 
     data class SignInSuccess(
-        val metadata: Metadata? = null,
+        val metadata: NostrMetadata? = null,
     ): LoginState()
 }

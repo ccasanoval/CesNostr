@@ -53,4 +53,8 @@ dependencies {
     // Preferences
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.security.crypto)
+
+    /// Nostr
+    implementation(libs.nostr.sdk)
+
 }

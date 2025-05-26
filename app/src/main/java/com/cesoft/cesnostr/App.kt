@@ -6,9 +6,7 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class App: Application()
 
-//At app start -> check if account saved in secure prefs, if not:
-//TODO: Let user log in to get private key...
-    //-> sign in with public or private key...
+
 //TODO: Let user sign a new nostr key...
     //-> make a new notr user account
 
@@ -19,3 +17,4 @@ class App: Application()
 //TODO: Let user search authors by name
 //TODO: Let user search tags
 //TODO: Let user see author detailed info
+//TODO: Let user see his own keys: private and public... -> create password or biometrics

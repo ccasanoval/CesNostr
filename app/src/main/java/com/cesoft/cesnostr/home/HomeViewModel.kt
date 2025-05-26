@@ -10,7 +10,7 @@ import com.adidas.mvi.MviHost
 import com.adidas.mvi.Reducer
 import com.adidas.mvi.State
 import com.adidas.mvi.reducer.Reducer
-import com.cesoft.cesnostr.Page
+import com.cesoft.cesnostr.view.Page
 import com.cesoft.cesnostr.home.vmi.HomeIntent
 import com.cesoft.cesnostr.home.vmi.HomeSideEffect
 import com.cesoft.cesnostr.home.vmi.HomeState
@@ -70,11 +70,11 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun fetch(): HomeTransform.GoInit {
         try {
-            Log.e("AAA", "********************************************* FETCH 0")
             initLogger(LogLevel.INFO)
             val pubKeyCes = PublicKey.parse("npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k")//CES
             val pubKeyBtc = PublicKey.parse("npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv")
 
+            //TODO: Meter todo en repositorio -> dominio:caso_uso
             var client = readPrivateKey()?.let {
                 val keys = Keys.parse(it)
                 val signer = NostrSigner.keys(keys)

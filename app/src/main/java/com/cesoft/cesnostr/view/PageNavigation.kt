@@ -1,4 +1,4 @@
-package com.cesoft.cesnostr
+package com.cesoft.cesnostr.view
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding

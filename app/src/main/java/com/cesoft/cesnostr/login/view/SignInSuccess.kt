@@ -30,7 +30,7 @@ internal fun SignInSuccess(
 ) {
     LazyColumn(modifier = Modifier.padding(SepMin)) {
         item { Spacer(Modifier.height(SepMed)) }
-        state.metadata?.asRecord()?.let {
+        state.metadata?.let {
             item { StyledField(stringResource(R.string.nick), it.displayName) }
             item { StyledField(stringResource(R.string.name), it.name) }
             item { StyledField(stringResource(R.string.wallet), it.lud16) }

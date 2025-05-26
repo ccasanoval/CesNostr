@@ -1,4 +1,4 @@
-package com.cesoft.cesnostr
+package com.cesoft.cesnostr.view
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,6 +32,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.cesoft.cesnostr.BuildConfig
+import com.cesoft.cesnostr.R
 import com.cesoft.cesnostr.ui.theme.SepMax
 import com.cesoft.cesnostr.ui.theme.SepMed
 import kotlinx.coroutines.launch

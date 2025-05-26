@@ -1,6 +1,7 @@
-package com.cesoft.cesnostr
+package com.cesoft.cesnostr.view
 
 import android.content.Context
+import com.cesoft.cesnostr.R
 import com.cesoft.domain.AppError
 
 class Util(private var context: Context) {
