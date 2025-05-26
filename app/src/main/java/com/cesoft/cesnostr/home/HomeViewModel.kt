@@ -16,6 +16,7 @@ import com.cesoft.cesnostr.home.vmi.HomeSideEffect
 import com.cesoft.cesnostr.home.vmi.HomeState
 import com.cesoft.cesnostr.home.vmi.HomeTransform
 import com.cesoft.domain.AppError
+import com.cesoft.domain.usecase.ReadPrivateKeyUC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
@@ -23,9 +24,9 @@ import rust.nostr.sdk.Client
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Keys
 import rust.nostr.sdk.Kind
-import rust.nostr.sdk.Metadata
 import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.LogLevel
+import rust.nostr.sdk.Metadata
 import rust.nostr.sdk.NostrSigner
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.initLogger
@@ -34,8 +35,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    //private val getByCounty: GetByCountyUC
-
+    private val readPrivateKey: ReadPrivateKeyUC,
 ): ViewModel(), MviHost<HomeIntent, State<HomeState, HomeSideEffect>> {
 
     private val reducer: Reducer<HomeIntent, State<HomeState, HomeSideEffect>> = Reducer(
@@ -75,13 +75,21 @@ class HomeViewModel @Inject constructor(
             val pubKeyCes = PublicKey.parse("npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k")//CES
             val pubKeyBtc = PublicKey.parse("npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv")
 
-            //val keys = Keys.generate()
-            //val signer = NostrSigner.keys(keys)
-            //val client = Client(signer = signer)
-            val client = Client()//TODO: Use the client key saved in secure prefs!!!
-            client.addRelay("wss://relay.damus.io")
-            client.addRelay("wss://nostr.bitcoiner.social")
+            var client = readPrivateKey()?.let {
+                val keys = Keys.parse(it)
+                val signer = NostrSigner.keys(keys)
+                Client(signer = signer)
+            } ?: run {
+                Client()
+            }
+
             client.addRelay("wss://nos.lol")
+            client.addRelay("wss://nostr.bitcoiner.social")
+            client.addRelay("wss://nostr.mom")
+            client.addRelay("wss://nostr.oxtr.dev")
+            client.addRelay("wss://relay.nostr.band")
+            client.addRelay("wss://relay.damus.io")
+            client.addRelay("wss://nostr.swiss-enigma.ch")
             client.connect()
 
             //----------- Metadata

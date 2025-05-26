@@ -127,7 +127,7 @@ private fun Toolbar(
                     }) {
                         //Icon(Icons.Default.Menu, contentDescription = "Menu")
                         Icon(
-                            painter = painterResource(R.mipmap.ic_launcher),
+                            painter = painterResource(R.mipmap.ic_launcher_round),
                             contentDescription = "",
                             tint = Color.Unspecified
                         )
