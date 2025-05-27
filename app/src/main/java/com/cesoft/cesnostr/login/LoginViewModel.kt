@@ -8,14 +8,15 @@ import com.adidas.mvi.MviHost
 import com.adidas.mvi.Reducer
 import com.adidas.mvi.State
 import com.adidas.mvi.reducer.Reducer
-import com.cesoft.cesnostr.view.Page
 import com.cesoft.cesnostr.login.mvi.LoginIntent
 import com.cesoft.cesnostr.login.mvi.LoginSideEffect
 import com.cesoft.cesnostr.login.mvi.LoginState
 import com.cesoft.cesnostr.login.mvi.LoginTransform
+import com.cesoft.cesnostr.view.Page
 import com.cesoft.domain.AppError
 import com.cesoft.domain.entity.NostrKeys
 import com.cesoft.domain.entity.NostrMetadata
+import com.cesoft.domain.usecase.CreateUserUC
 import com.cesoft.domain.usecase.GetKeysUC
 import com.cesoft.domain.usecase.GetUserMetadataUC
 import com.cesoft.domain.usecase.SavePrivateKeyUC
@@ -29,6 +30,7 @@ class LoginViewModel @Inject constructor(
     private val savePrivateKey: SavePrivateKeyUC,
     private val getUserMetadata: GetUserMetadataUC,
     private val getKeys: GetKeysUC,
+    private val createUser: CreateUserUC,
 ): ViewModel(), MviHost<LoginIntent, State<LoginState, LoginSideEffect>> {
     var _nsec = ""
 
@@ -46,7 +48,7 @@ class LoginViewModel @Inject constructor(
     private fun executeIntent(intent: LoginIntent) =
         when(intent) {
             is LoginIntent.SignIn -> executeSignIn(intent.nsec)
-            is LoginIntent.Create -> executeCreate()
+            is LoginIntent.Create -> executeCreate(intent.metadata)
             LoginIntent.Accept -> executeAccept()
             LoginIntent.Cancel -> executeCancel()
         }
@@ -94,12 +96,19 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    //TODO: ----------------------------------------------------------------------------------------
-    private fun executeCreate() = flow {
-//        val keys = Keys.generate()
-//        val signer = NostrSigner.keys(keys)
-//        val client = Client(signer = signer)
-        emit(LoginTransform.GoSignInSuccess())
+    private fun executeCreate(metadata: NostrMetadata) = flow {
+        val res: Result<NostrKeys> = createUser(metadata)
+        if(res.isSuccess) {
+            val keys = res.getOrNull()
+            val nsec = keys?.privateKey?.nsec ?: ""
+            savePrivateKey(nsec)
+            emit(LoginTransform.AddSideEffect(LoginSideEffect.GoHome))
+        }
+        else {
+            val e = res.exceptionOrNull()
+            android.util.Log.e(TAG, "executeCreate------------ e: $e")
+            emit(LoginTransform.GoInit(e))
+        }
     }
 
     fun consumeSideEffect(

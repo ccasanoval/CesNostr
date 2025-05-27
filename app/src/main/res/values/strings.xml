@@ -23,8 +23,16 @@
 
     <!-- Fields -->
     <string name="npubnsec">npub/nsec</string>
-    <string name="acc_display_name">Nombre</string>
-    <string name="acc_image">Imagen</string>
+    <string name="nsec">nsec</string>
+    <string name="acc_name">Nombre de usuario</string>
+    <string name="acc_display_name">Nick para mostrar</string>
+    <string name="acc_about">Sobre ti</string>
+    <string name="acc_website">Web</string>
+    <string name="acc_picture">Avatar</string>
+    <string name="acc_banner">Banner</string>
+    <string name="acc_lud16">Wallet</string>
+    <string name="acc_lud06">LNURL</string>
+    <string name="acc_nip05">NIP05</string>
     <string name="acc_pwd">Clave</string>
 
     <string name="nick">Nick</string>

@@ -7,12 +7,6 @@ import com.cesoft.domain.entity.NostrMetadata
 
 internal object LoginTransform {
 
-//    data object GoReload : ViewTransform<LoginState, LoginSideEffect>() {
-//        override fun mutate(currentState: LoginState): LoginState {
-//            return LoginState.Loading
-//        }
-//    }
-
     data class GoSignInSuccess(
         val metadata: NostrMetadata? = null,
         val error: Throwable? = null,

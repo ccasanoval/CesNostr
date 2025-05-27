@@ -11,6 +11,8 @@ import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Keys
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
+import rust.nostr.sdk.Metadata
+import rust.nostr.sdk.NostrSigner
 import rust.nostr.sdk.PublicKey
 import java.time.Duration
 import kotlin.String
@@ -30,18 +32,32 @@ class NostrRepository(
     }
 
     private fun Event.toMetadata(): NostrMetadata {
-        val metadata = rust.nostr.sdk.Metadata.fromJson(content()).asRecord()
+        val metadata = Metadata.fromJson(content()).asRecord()
         return NostrMetadata(
-            about = metadata.about,
-            name = metadata.name,
-            displayName = metadata.displayName,
-            website = metadata.website,
-            picture = metadata.picture,
-            banner = metadata.banner,
-            lud06 = metadata.lud06,
-            lud16 = metadata.lud16,
-            nip05 = metadata.nip05,
+            about = metadata.about ?: "",
+            name = metadata.name ?: "",
+            displayName = metadata.displayName ?: "",
+            website = metadata.website ?: "",
+            picture = metadata.picture ?: "",
+            banner = metadata.banner ?: "",
+            lud06 = metadata.lud06 ?: "",
+            lud16 = metadata.lud16 ?: "",
+            nip05 = metadata.nip05 ?: "",
         )
+    }
+
+    private fun NostrMetadata.toDto(): Metadata {
+        val metadata = Metadata()
+        if(name.isNotBlank()) metadata.setName(name)
+        if(displayName.isNotBlank()) metadata.setDisplayName(displayName)
+        if(about.isNotBlank()) metadata.setAbout(about)
+        if(website.isNotBlank()) metadata.setWebsite(website)
+        if(picture.isNotBlank()) metadata.setPicture(picture)
+        if(banner.isNotBlank()) metadata.setBanner(banner)
+        if(lud16.isNotBlank()) metadata.setLud16(lud16)
+        if(lud06.isNotBlank()) metadata.setLud06(lud06)
+        if(nip05.isNotBlank()) metadata.setNip05(nip05)
+        return metadata
     }
 
     override suspend fun getUserMetadata(npub: String): Result<NostrMetadata> {
@@ -77,6 +93,27 @@ class NostrRepository(
             return Result.success(nostrKeys)
         }
         catch (e: Exception) {
+            android.util.Log.e(TAG, "getKeys------------ $e")
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun createUser(metadata: NostrMetadata): Result<NostrKeys> {
+        try {
+            val keys = Keys.generate()
+            val signer = NostrSigner.keys(keys)
+            val client = Client(signer = signer)
+            addRelays(client)
+            //
+            client.setMetadata(metadata.toDto())
+            val publicKey = NostrPublicKey(keys.publicKey().toBech32())
+            android.util.Log.e(TAG, "createUser------------ npub = ${publicKey.npub}")
+            val privateKey = NostrPrivateKey(keys.secretKey().toBech32())
+            android.util.Log.e(TAG, "createUser------------ nsec = ${privateKey.nsec}")
+            return Result.success(NostrKeys(publicKey, privateKey))
+        }
+        catch (e: Exception) {
+            android.util.Log.e(TAG, "createUser------------ $e")
             return Result.failure(e)
         }
     }

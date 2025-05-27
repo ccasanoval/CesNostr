@@ -10,6 +10,6 @@ fun Throwable.toHumanMessage(context: Context): String {
         AppError.InvalidNostrKey -> context.getString(R.string.error_nostr_key)
         AppError.InvalidMetadata -> context.getString(R.string.error_metadata)
         AppError.UnknownError -> context.getString(R.string.error_unknown)
-        else -> context.getString(R.string.error_unknown)
+        else -> context.getString(R.string.error_unknown) + " : " + message
     }
 }
