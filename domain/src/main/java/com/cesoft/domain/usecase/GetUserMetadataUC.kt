@@ -5,7 +5,7 @@ import com.cesoft.domain.repo.NostrRepositoryContract
 import jakarta.inject.Inject
 
 
-open class GetUserMetadata @Inject constructor(
+open class GetUserMetadataUC @Inject constructor(
     private val repository: NostrRepositoryContract
 ) {
     suspend operator fun invoke(npub: String): Result<NostrMetadata> {

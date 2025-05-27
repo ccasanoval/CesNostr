@@ -14,21 +14,21 @@ import com.cesoft.cesnostr.login.mvi.LoginSideEffect
 import com.cesoft.cesnostr.login.mvi.LoginState
 import com.cesoft.cesnostr.login.mvi.LoginTransform
 import com.cesoft.domain.AppError
+import com.cesoft.domain.entity.NostrKeys
 import com.cesoft.domain.entity.NostrMetadata
-import com.cesoft.domain.usecase.GetUserMetadata
+import com.cesoft.domain.usecase.GetKeysUC
+import com.cesoft.domain.usecase.GetUserMetadataUC
 import com.cesoft.domain.usecase.SavePrivateKeyUC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
-import rust.nostr.sdk.Client
-import rust.nostr.sdk.Keys
-import rust.nostr.sdk.PublicKey
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val savePrivateKey: SavePrivateKeyUC,
-    private val getUserMetadata: GetUserMetadata,
+    private val getUserMetadata: GetUserMetadataUC,
+    private val getKeys: GetKeysUC,
 ): ViewModel(), MviHost<LoginIntent, State<LoginState, LoginSideEffect>> {
     var _nsec = ""
 
@@ -64,24 +64,28 @@ class LoginViewModel @Inject constructor(
 
     private fun executeSignIn(nsec: String) = flow {
         try {
-            val npub: PublicKey
+            val npub: String
             if (nsec.startsWith("nsec")) {
-                val keys = Keys.parse(nsec)
-                npub = keys.publicKey()
-                _nsec = nsec
+                val keys: Result<NostrKeys> = getKeys(nsec)
+                if(keys.isSuccess) {
+                    _nsec = nsec
+                    npub = keys.getOrNull()?.publicKey?.npub ?: ""
+
+                    val res: Result<NostrMetadata> = getUserMetadata(npub)
+                    if(res.isSuccess)
+                        emit(LoginTransform.GoSignInSuccess(res.getOrNull()))
+                    else
+                        emit(LoginTransform.GoInit(res.exceptionOrNull()))
+                }
+                else {
+                    emit(LoginTransform.GoInit(AppError.InvalidNostrKey))
+                }
             }
+            //TODO: Can we login with just public key?
             else {
                 android.util.Log.e(TAG, "executeSignIn------------ Wrong key: $nsec")
                 emit(LoginTransform.GoInit(AppError.InvalidNostrKey))
-                return@flow
             }
-
-
-            val res: Result<NostrMetadata> = getUserMetadata(npub.toBech32())
-            if(res.isSuccess)
-                emit(LoginTransform.GoSignInSuccess(res.getOrNull()))
-            else
-                emit(LoginTransform.GoInit(res.exceptionOrNull()))
         }
         catch (e: Exception) {
             android.util.Log.e(TAG, "executeSignIn------------ e: $e \n ${e.stackTrace}")
@@ -92,9 +96,9 @@ class LoginViewModel @Inject constructor(
 
     //TODO: ----------------------------------------------------------------------------------------
     private fun executeCreate() = flow {
-        //val keys = Keys.generate()
-        //val signer = NostrSigner.keys(keys)
-        //val client = Client(signer = signer)
+//        val keys = Keys.generate()
+//        val signer = NostrSigner.keys(keys)
+//        val client = Client(signer = signer)
         emit(LoginTransform.GoSignInSuccess())
     }
 

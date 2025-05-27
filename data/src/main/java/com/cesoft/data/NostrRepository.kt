@@ -1,10 +1,14 @@
 package com.cesoft.data
 
+import com.cesoft.domain.entity.NostrKeys
 import com.cesoft.domain.entity.NostrMetadata
+import com.cesoft.domain.entity.NostrPrivateKey
+import com.cesoft.domain.entity.NostrPublicKey
 import com.cesoft.domain.repo.NostrRepositoryContract
 import rust.nostr.sdk.Client
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Keys
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.PublicKey
@@ -60,6 +64,19 @@ class NostrRepository(
         }
         catch(e: Exception) {
             android.util.Log.e(TAG, "getUserMetadata:e:----------------- $e : $npub")
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun getKeys(nsec: String): Result<NostrKeys> {
+        try {
+            val keys = Keys.parse(nsec)
+            val publicKey = NostrPublicKey(keys.publicKey().toBech32())
+            val privateKey = NostrPrivateKey(keys.secretKey().toBech32())
+            val nostrKeys = NostrKeys(publicKey, privateKey)
+            return Result.success(nostrKeys)
+        }
+        catch (e: Exception) {
             return Result.failure(e)
         }
     }
