@@ -32,6 +32,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.cesoft.cesnostr.BuildConfig
 import com.cesoft.cesnostr.R
 import com.cesoft.cesnostr.ui.theme.SepMax
@@ -40,9 +42,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MainDrawerMenu(
+    navController: NavHostController,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -82,7 +86,10 @@ fun MainDrawerMenu(
                         label = { Text(stringResource(R.string.menu_account)) },
                         selected = false,
                         icon = { Icon(Icons.Outlined.AccountCircle, contentDescription = null) },
-                        onClick = { /* Handle click */ },
+                        onClick = {
+                            navController.navigate(Page.Account.route)
+                            scope.launch { drawerState.close() }
+                        }
                     )
 
                     NavigationDrawerItem(

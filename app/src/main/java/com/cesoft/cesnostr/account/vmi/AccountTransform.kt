@@ -3,7 +3,8 @@ package com.cesoft.cesnostr.account.vmi
 import com.adidas.mvi.sideeffects.SideEffects
 import com.adidas.mvi.transform.SideEffectTransform
 import com.adidas.mvi.transform.ViewTransform
-import rust.nostr.sdk.Metadata
+import com.cesoft.domain.entity.NostrKeys
+import com.cesoft.domain.entity.NostrMetadata
 
 internal object AccountTransform {
 
@@ -14,11 +15,13 @@ internal object AccountTransform {
     }
 
     data class GoInit(
-        val metadata: Map<String, Metadata> = mapOf(),
+        val keys: NostrKeys = NostrKeys.Empty,
+        val metadata: NostrMetadata = NostrMetadata.Empty,
         val error: Throwable? = null,
     ) : ViewTransform<AccountState, AccountSideEffect>() {
         override fun mutate(currentState: AccountState): AccountState {
             return AccountState.Init(
+                keys = keys,
                 metadata = metadata,
                 error = error
             )

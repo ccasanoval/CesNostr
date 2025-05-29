@@ -12,4 +12,7 @@ data class NostrMetadata(
     val nip05: String,//PubKey to DNS name
 ) {
     //public open fun getCustomField(key: kotlin.String): rust.nostr.sdk.JsonValue? { /* compiled code */ }
+    companion object {
+        val Empty = NostrMetadata("","","","","","","","","")
+    }
 }

@@ -1,36 +1,33 @@
 package com.cesoft.cesnostr.account
 
-import android.util.Log
+import android.app.Activity
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.adidas.mvi.MviHost
 import com.adidas.mvi.Reducer
 import com.adidas.mvi.State
 import com.adidas.mvi.reducer.Reducer
+import com.cesoft.cesnostr.account.view.AccountInit
 import com.cesoft.cesnostr.account.vmi.AccountIntent
 import com.cesoft.cesnostr.account.vmi.AccountSideEffect
 import com.cesoft.cesnostr.account.vmi.AccountState
 import com.cesoft.cesnostr.account.vmi.AccountTransform
+import com.cesoft.cesnostr.view.Page
 import com.cesoft.domain.AppError
+import com.cesoft.domain.entity.NostrKeys
+import com.cesoft.domain.usecase.GetKeysUC
+import com.cesoft.domain.usecase.ReadPrivateKeyUC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
-import rust.nostr.sdk.Client
-import rust.nostr.sdk.Filter
-import rust.nostr.sdk.Keys
-import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindStandard
-import rust.nostr.sdk.LogLevel
-import rust.nostr.sdk.Metadata
-import rust.nostr.sdk.NostrSigner
-import rust.nostr.sdk.PublicKey
-import rust.nostr.sdk.initLogger
-import java.time.Duration
 import javax.inject.Inject
 
 @HiltViewModel
 class AccountViewModel @Inject constructor(
-    //private val getByCounty: GetByCountyUC
+    private val readPrivateKey: ReadPrivateKeyUC,
+    private val getKeys: GetKeysUC,
 ): ViewModel(), MviHost<AccountIntent, State<AccountState, AccountSideEffect>> {
 
     private val reducer: Reducer<AccountIntent, State<AccountState, AccountSideEffect>> = Reducer(
@@ -65,23 +62,36 @@ class AccountViewModel @Inject constructor(
 
 
     private suspend fun fetch(): AccountTransform.GoInit {
-        try {
-            initLogger(LogLevel.INFO)
-
-            //val privKeyCes = Keys.parse("nsec1dh2c86ga0ajrcgaye0zr53h7nnxlfe67dxqnvhmcqld62jx8rk7qnvzort")
-            //val keys = Keys.generate()
-
-
-
-            //else {
-                val e = AppError.NotFound
-                Log.e(TAG, "fetch:e:---------------- $e")
-                return AccountTransform.GoInit(error = e)
-            //}
+        val nsec: String? = readPrivateKey()
+        if(nsec == null || !nsec.contains("nsec")) {
+            return AccountTransform.GoInit(error = AppError.InvalidNostrKey)
         }
-        catch (e: Exception) {
-            Log.e(TAG, "fetch:failure:---------------- $e")
-            return AccountTransform.GoInit(error = e)
+        val res: Result<NostrKeys> = getKeys(nsec)
+        val keys = res.getOrNull()
+        if(res.isFailure || keys == null) {
+            return AccountTransform.GoInit(error = AppError.InvalidNostrKey)//TODO: Different error
+        }
+        return AccountTransform.GoInit(keys = keys)
+
+//        catch (e: Exception) {
+//            Log.e(TAG, "fetch:failure:---------------- $e")
+//            return AccountTransform.GoInit(error = e)
+//        }
+    }
+
+
+    fun consumeSideEffect(
+        sideEffect: AccountSideEffect,
+        navController: NavController,
+        context: Context
+    ) {
+        when(sideEffect) {
+            AccountSideEffect.Start -> {
+                navController.navigate(Page.Home.route)
+            }
+            AccountSideEffect.Close -> {
+                (context as Activity).finish()
+            }
         }
     }
 

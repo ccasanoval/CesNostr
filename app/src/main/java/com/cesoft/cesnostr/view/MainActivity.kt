@@ -14,9 +14,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CesNostrTheme {
-                MainDrawerMenu { innerPadding ->
-                    PageNavigation(innerPadding)
-                }
+                PageNavigation()
             }
         }
     }
