@@ -66,7 +66,7 @@ dependencies {
     implementation(project(":domain"))
 
     /// Nostr
-    implementation(libs.nostr.sdk)
+    implementation(libs.nostr.sdk)//TODO: Moved to data, delete here?
     //implementation("net.java.dev.jna:jna:5.17.0@aar")//Don't replace with catalog, problem with @aar
 
     // DI
@@ -83,4 +83,9 @@ dependencies {
 
     /// Image Loader
     implementation(libs.coil.compose)
+
+    /// Scan QR code (https://github.com/G00fY2/quickie)
+    implementation(libs.quickie.bundled)
+    /// QR code image creator (https://github.com/g0dkar/qrcode-kotlin)
+    //implementation("io.github.g0dkar:qrcode-kotlin:4.4.1")//TODO: Moved to data, delete here
 }

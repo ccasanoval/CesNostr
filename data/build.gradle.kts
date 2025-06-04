@@ -57,4 +57,8 @@ dependencies {
     /// Nostr
     implementation(libs.nostr.sdk)
 
+    /// Scan QR code (https://github.com/G00fY2/quickie)
+    implementation(libs.quickie.bundled)
+    /// QR code image creator (https://github.com/g0dkar/qrcode-kotlin)
+    implementation(libs.qrcode.kotlin)
 }

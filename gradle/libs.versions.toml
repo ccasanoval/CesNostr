@@ -19,6 +19,8 @@ mviCompose = "0.1.0"
 navigationCompose = "2.9.0"
 nostrSdk = "0.41.0"
 datastorePreferences = "1.1.7"
+qrcodeKotlin = "4.4.1"
+quickieBundled = "1.11.0"
 securityCrypto = "1.0.0"
 
 [libraries]
@@ -51,6 +53,8 @@ hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-comp
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
+qrcode-kotlin = { module = "io.github.g0dkar:qrcode-kotlin", version.ref = "qrcodeKotlin" }
+quickie-bundled = { module = "io.github.g00fy2.quickie:quickie-bundled", version.ref = "quickieBundled" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

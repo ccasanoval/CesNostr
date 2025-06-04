@@ -19,14 +19,13 @@ fun AccountPage(
     navController: NavController,
     viewModel: AccountViewModel,
 ) {
-    val context = LocalContext.current
+    //TODO: Show back arrow !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     MviScreen(
         state = viewModel.state,
         onSideEffect = { sideEffect ->
             viewModel.consumeSideEffect(
                 sideEffect = sideEffect,
-                navController = navController,
-                context = context
+                navController = navController
             )
         },
         onBackPressed = {
@@ -49,7 +48,7 @@ fun AccountPage(
 @Preview
 @Composable
 private fun AccountPage_Preview() {
-    val publicKey = NostrPublicKey("aaaaaaaaaaaaabbbbbbbbbbcccccccccccccc")
+        val publicKey = NostrPublicKey("aaaaaaaaaaaaabbbbbbbbbbcccccccccccccc")
     val privateKey = NostrPrivateKey("xxxxxxxxxxyyyyyyyyyyzzzzzzzzzzzzzzzzz")
     val m = NostrMetadata(
         name = "CESoft",
@@ -65,6 +64,8 @@ private fun AccountPage_Preview() {
     val state = AccountState.Init(
         keys = NostrKeys(publicKey, privateKey),
         metadata = m,
+        nsecImg = "",
+        npubImg = "",
     )
     AccountInit(state) {}
 }

@@ -1,8 +1,10 @@
 package com.cesoft.data.di
 
 import android.content.Context
+import com.cesoft.data.FilesRepository
 import com.cesoft.data.NostrRepository
 import com.cesoft.data.PrefsRepository
+import com.cesoft.domain.repo.FilesRepositoryContract
 import com.cesoft.domain.repo.NostrRepositoryContract
 import com.cesoft.domain.repo.PrefsRepositoryContract
 import dagger.Module
@@ -66,9 +68,16 @@ object DiModule {
     @Singleton
     @Provides
     fun provideNostrRepository(
-        //@ApplicationContext appContext: Context,
     ): NostrRepositoryContract {
         return NostrRepository()
+    }
+
+    @Singleton
+    @Provides
+    fun provideFilesRepository(
+        @ApplicationContext appContext: Context,
+    ): FilesRepositoryContract {
+        return FilesRepository(appContext)
     }
 
 }

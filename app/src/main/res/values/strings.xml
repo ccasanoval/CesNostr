@@ -15,6 +15,7 @@
     <string name="sign_in_nostr">Login</string>
     <string name="create_nostr_acc_title">Crear nueva cuenta Nostr</string>
     <string name="create_nostr_acc">Crear cuenta</string>
+    <string name="copy_to_clipboard">Copiar al portapapeles</string>
 
     <!-- Menu Items -->
     <string name="menu_account">Tu cuenta</string>
@@ -24,6 +25,8 @@
     <!-- Fields -->
     <string name="npubnsec">npub/nsec</string>
     <string name="nsec">nsec</string>
+    <string name="private_key">Clave privada</string>
+    <string name="public_key">Clave pública</string>
     <string name="acc_name">Nombre de usuario</string>
     <string name="acc_display_name">Nick para mostrar</string>
     <string name="acc_about">Sobre ti</string>

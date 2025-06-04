@@ -1,5 +1,6 @@
 package com.cesoft.cesnostr.login.view
 
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import com.cesoft.cesnostr.ui.theme.SepMax
 import com.cesoft.cesnostr.ui.theme.SepMed
 import com.cesoft.cesnostr.ui.theme.SepMin
 import com.cesoft.domain.entity.NostrMetadata
+import io.github.g00fy2.quickie.ScanQRCode
 
 @Composable
 internal fun LoginCompo(
@@ -94,6 +96,8 @@ internal fun LoginCompo(
                         Text(text = stringResource(R.string.sign_in_nostr))
                     }
                 }
+                Text("O escanea:")
+
             }
             HorizontalDivider(Modifier.padding(SepMax))
 
@@ -189,6 +193,18 @@ private fun ButtonMain(
     }
 }
 
+@Composable
+fun GetQRCodeExample() {
+    val scanQrCodeLauncher = rememberLauncherForActivityResult(ScanQRCode()) { result ->
+        //TODO: Use code
+        android.util.Log.e("AAA", "---------- Código: $result")
+    }
+    Button(onClick = { scanQrCodeLauncher.launch(null) }) {
+        Text("Escanea el codigo")
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
 @Preview
 @Composable
 private fun LoginInit_Preview() {

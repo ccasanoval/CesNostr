@@ -9,7 +9,6 @@ import com.adidas.mvi.MviHost
 import com.adidas.mvi.Reducer
 import com.adidas.mvi.State
 import com.adidas.mvi.reducer.Reducer
-import com.cesoft.cesnostr.account.view.AccountInit
 import com.cesoft.cesnostr.account.vmi.AccountIntent
 import com.cesoft.cesnostr.account.vmi.AccountSideEffect
 import com.cesoft.cesnostr.account.vmi.AccountState
@@ -17,10 +16,14 @@ import com.cesoft.cesnostr.account.vmi.AccountTransform
 import com.cesoft.cesnostr.view.Page
 import com.cesoft.domain.AppError
 import com.cesoft.domain.entity.NostrKeys
+import com.cesoft.domain.entity.NostrPrivateKey
+import com.cesoft.domain.entity.NostrPublicKey
+import com.cesoft.domain.usecase.CreateQrImageUC
 import com.cesoft.domain.usecase.GetKeysUC
 import com.cesoft.domain.usecase.ReadPrivateKeyUC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
@@ -28,6 +31,7 @@ import javax.inject.Inject
 class AccountViewModel @Inject constructor(
     private val readPrivateKey: ReadPrivateKeyUC,
     private val getKeys: GetKeysUC,
+    private val createQrImage: CreateQrImageUC,
 ): ViewModel(), MviHost<AccountIntent, State<AccountState, AccountSideEffect>> {
 
     private val reducer: Reducer<AccountIntent, State<AccountState, AccountSideEffect>> = Reducer(
@@ -60,8 +64,8 @@ class AccountViewModel @Inject constructor(
         emit(fetch())
     }
 
-
     private suspend fun fetch(): AccountTransform.GoInit {
+        //delay(3_000)
         val nsec: String? = readPrivateKey()
         if(nsec == null || !nsec.contains("nsec")) {
             return AccountTransform.GoInit(error = AppError.InvalidNostrKey)
@@ -69,28 +73,29 @@ class AccountViewModel @Inject constructor(
         val res: Result<NostrKeys> = getKeys(nsec)
         val keys = res.getOrNull()
         if(res.isFailure || keys == null) {
-            return AccountTransform.GoInit(error = AppError.InvalidNostrKey)//TODO: Different error
+            val nsecImg = createQrImage(nsec).getOrNull() ?: ""
+            return AccountTransform.GoInit(
+                keys = NostrKeys(NostrPublicKey("-"), NostrPrivateKey(nsec)),
+                nsecImg = nsecImg,
+                error = AppError.InvalidNostrKey
+            )
         }
-        return AccountTransform.GoInit(keys = keys)
-
-//        catch (e: Exception) {
-//            Log.e(TAG, "fetch:failure:---------------- $e")
-//            return AccountTransform.GoInit(error = e)
-//        }
+        val nsecImg = createQrImage(keys.privateKey.nsec).getOrNull() ?: ""
+        val npubImg = createQrImage(keys.publicKey.npub).getOrNull() ?: ""
+        return AccountTransform.GoInit(
+            keys = keys,
+            nsecImg = nsecImg,
+            npubImg = npubImg
+        )
     }
-
 
     fun consumeSideEffect(
         sideEffect: AccountSideEffect,
         navController: NavController,
-        context: Context
     ) {
         when(sideEffect) {
-            AccountSideEffect.Start -> {
-                navController.navigate(Page.Home.route)
-            }
             AccountSideEffect.Close -> {
-                (context as Activity).finish()
+                navController.navigate(Page.Home.route)
             }
         }
     }

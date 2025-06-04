@@ -17,12 +17,16 @@ internal object AccountTransform {
     data class GoInit(
         val keys: NostrKeys = NostrKeys.Empty,
         val metadata: NostrMetadata = NostrMetadata.Empty,
+        val nsecImg: String = "",
+        val npubImg: String = "",
         val error: Throwable? = null,
     ) : ViewTransform<AccountState, AccountSideEffect>() {
         override fun mutate(currentState: AccountState): AccountState {
             return AccountState.Init(
                 keys = keys,
                 metadata = metadata,
+                nsecImg = nsecImg,
+                npubImg = npubImg,
                 error = error
             )
         }

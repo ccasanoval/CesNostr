@@ -9,6 +9,8 @@ sealed class AccountState: LoggableState {
     data class Init(
         val keys: NostrKeys,
         val metadata: NostrMetadata,
+        val nsecImg: String,
+        val npubImg: String,
         val wait: Boolean = false,
         val error: Throwable? = null
     ): AccountState()
