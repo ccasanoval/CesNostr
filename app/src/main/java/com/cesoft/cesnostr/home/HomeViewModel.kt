@@ -16,10 +16,7 @@ import com.cesoft.cesnostr.home.vmi.HomeTransform
 import com.cesoft.cesnostr.view.Page
 import com.cesoft.domain.entity.NostrEvent
 import com.cesoft.domain.entity.NostrKindStandard
-import com.cesoft.domain.entity.NostrMetadata
 import com.cesoft.domain.usecase.GetEventsUC
-import com.cesoft.domain.usecase.GetUserMetadataUC
-import com.cesoft.domain.usecase.ReadPrivateKeyUC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
@@ -27,9 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val readPrivateKey: ReadPrivateKeyUC,
     private val getEvents: GetEventsUC,
-    private val getUserMetadata: GetUserMetadataUC,
 ): ViewModel(), MviHost<HomeIntent, State<HomeState, HomeSideEffect>> {
 
     private val reducer: Reducer<HomeIntent, State<HomeState, HomeSideEffect>> = Reducer(
@@ -72,18 +67,10 @@ class HomeViewModel @Inject constructor(
             kind = NostrKindStandard.TEXT_NOTE,
             authList = authList
         )
-        //TODO: Retrieve directly for use case the events with the author metadata!!!!!
         return if(res.isSuccess) {
             val events = res.getOrNull()
-            var error: Throwable? = null
-            val map = mutableMapOf<String, NostrMetadata>()
-            for(a in authList) {
-                val res: Result<NostrMetadata> = getUserMetadata(a)
-                res.getOrNull()?.let { map[a] = it }
-                res.exceptionOrNull()?.let { error = it }
-            }
             if(events != null)
-                HomeTransform.GoInit(events = events, metadata = map)
+                HomeTransform.GoInit(events = events)//, metadata = map)
             else
                 HomeTransform.GoInit(error = UnknownError())
         }

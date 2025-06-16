@@ -37,7 +37,6 @@ internal fun HomeEventList(
 ) {
     val refreshState = rememberPullToRefreshState()
     val events = state.events
-    val metadata = state.metadata
     var isRefreshing = state.wait
     LaunchedEffect(state) {
         isRefreshing = state.wait
@@ -58,7 +57,7 @@ internal fun HomeEventList(
                         )
 
                         // Author metadata
-                        AuthorMetadata(event, metadata)
+                        AuthorMetadata(event)
 
                         // Time and type
                         Text(event.createdAt.toString())
@@ -75,18 +74,8 @@ internal fun HomeEventList(
 }
 
 @Composable
-private fun AuthorMetadata(
-    event: NostrEvent,
-    metadata: Map<String, NostrMetadata>
-) {
-    var meta: NostrMetadata? = null
-    for(m in metadata) {
-        android.util.Log.e("HomeEventList", "AuthorMetadata------------- ${m.key} <> ${event.auth}")
-        if(m.key == event.auth) {
-            meta = m.value
-            break
-        }
-    }
+private fun AuthorMetadata(event: NostrEvent) {
+    var meta: NostrMetadata? = event.authMeta
     meta?.let {
         Row(modifier = Modifier.padding(SepMin)) {
             AsyncImage(

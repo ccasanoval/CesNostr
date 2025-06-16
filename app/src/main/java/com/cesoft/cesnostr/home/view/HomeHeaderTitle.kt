@@ -1,5 +1,5 @@
 package com.cesoft.cesnostr.home.view
-
+/*
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,4 +39,4 @@ internal fun HomeHeaderTitle() {
             modifier = Modifier.padding(start = SepMed)
         )
     }
-}
+}*/

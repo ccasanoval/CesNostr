@@ -37,7 +37,7 @@ internal fun HomeInit(
             ErrorHeader(state.error.toHumanMessage(LocalContext.current), isErrorVisible)
         }
         else {
-            HomeHeaderTitle()
+            //HomeHeaderTitle()
             if(state.events.isEmpty())
                 EmptyCompo()
             else

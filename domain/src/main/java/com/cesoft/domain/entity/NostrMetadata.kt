@@ -1,6 +1,7 @@
 package com.cesoft.domain.entity
 
 data class NostrMetadata(
+    val npub: String,
     val about: String,
     val name: String,
     val displayName: String,
@@ -13,6 +14,6 @@ data class NostrMetadata(
 ) {
     //public open fun getCustomField(key: kotlin.String): rust.nostr.sdk.JsonValue? { /* compiled code */ }
     companion object {
-        val Empty = NostrMetadata("","","","","","","","","")
+        val Empty = NostrMetadata("","","","","","","","","", "")
     }
 }

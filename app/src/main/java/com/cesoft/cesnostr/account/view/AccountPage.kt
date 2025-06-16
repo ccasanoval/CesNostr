@@ -48,9 +48,10 @@ fun AccountPage(
 @Preview
 @Composable
 private fun AccountPage_Preview() {
-        val publicKey = NostrPublicKey("aaaaaaaaaaaaabbbbbbbbbbcccccccccccccc")
+        val publicKey = NostrPublicKey("npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k")
     val privateKey = NostrPrivateKey("xxxxxxxxxxyyyyyyyyyyzzzzzzzzzzzzzzzzz")
     val m = NostrMetadata(
+        npub = "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",
         name = "CESoft",
         displayName = "CES Soft",
         about = "Test testest setae stest etse test",

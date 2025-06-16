@@ -129,9 +129,10 @@ private fun KeyComposable(title: String, key: String, imagePath: String) {
 @Preview
 @Composable
 private fun AccountInit_Preview() {
-    val publicKey = NostrPublicKey("aaaaaaaaaaaaabbbbbbbbbbcccccccccccccc")
-    val privateKey = NostrPrivateKey("xxxxxxxxxxyyyyyyyyyyzzzzzzzzzzzzzzzzz")
+    val publicKey = NostrPublicKey("1e67de3754171071d3cf9b44b6e546bd94fd0a2ca3fb4dbbb1b054685c9116e4")
+    val privateKey = NostrPrivateKey("1e67de3754171071d3cf9b44b6e546bd94fd0a2ca3fb4dbbb1b054685c9116e4")
     val m = NostrMetadata(
+        npub = "1e67de3754171071d3cf9b44b6e546bd94fd0a2ca3fb4dbbb1b054685c9116e4",
         name = "CESoft",
         displayName = "CES Soft",
         about = "Test testest setae stest etse test",

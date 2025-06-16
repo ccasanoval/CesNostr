@@ -5,7 +5,8 @@ import java.time.LocalDateTime
 data class NostrEvent(
     val kind: NostrKindStandard,
     val tags: List<String>,
-    val auth: String,//npub
+    val authKey: String,//npub
+    val authMeta: NostrMetadata,
     val createdAt: LocalDateTime,
     val content: String,
     val json: String,
