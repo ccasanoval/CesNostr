@@ -2,6 +2,7 @@ package com.cesoft.cesnostr.home.view
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -9,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -19,15 +21,24 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.cesoft.cesnostr.R
 import com.cesoft.cesnostr.common.LinkifyText
 import com.cesoft.cesnostr.home.vmi.HomeIntent
 import com.cesoft.cesnostr.home.vmi.HomeState
+import com.cesoft.cesnostr.ui.theme.FontSizeBig
+import com.cesoft.cesnostr.ui.theme.FontSizeMed
 import com.cesoft.cesnostr.ui.theme.SepMin
 import com.cesoft.domain.entity.NostrEvent
+import com.cesoft.domain.entity.NostrKindStandard
 import com.cesoft.domain.entity.NostrMetadata
+import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,11 +72,17 @@ internal fun HomeEventList(
 
                         // Time and type
                         Text(event.createdAt.toString())
-                        Text("${event.kind} (${event.kind.ordinal})")
+                        Text("${event.kind}")
 
                         // Content
                         HorizontalDivider()
-                        LinkifyText(event.content)
+                        LinkifyText(
+                            text = event.content,
+                            style = TextStyle.Default.copy(
+                                lineBreak = LineBreak.Paragraph,
+                                hyphens = Hyphens.Auto
+                            )
+                        )
                     }
                 }
             }
@@ -90,9 +107,71 @@ private fun AuthorMetadata(event: NostrEvent) {
                 //colorFilter = ColorFilter.tint(Color.Unspecified)
             )
             Column(modifier = Modifier.padding(start = SepMin)) {
-                Text(it.displayName)
-                Text(it.lud16, color = MaterialTheme.colorScheme.outline)
+                Text(
+                    text = it.displayName,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = FontSizeMed,
+                )
+                Text(
+                    text = it.lud16,
+                    color = MaterialTheme.colorScheme.secondary
+                )
             }
         }
+    }
+}
+
+//-----------------------------------------------------------------------------
+@Preview
+@Composable
+private fun HomeEventList_Preview() {
+    val authMeta1 = NostrMetadata(
+        npub = "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",
+        about = "About this author...",
+        name = "CESoft",
+        displayName = "CES Soft",
+        website = "",
+        picture = "https://cortados.freevar.com/web/front/images/scorpion_s.png",
+        banner = "",
+        lud06 = "aaaa@aaaa.com",
+        lud16 = "aaaa@aaaa.com",
+        nip05 = ""
+    )
+    val authMeta2 = NostrMetadata(
+        npub = "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",
+        about = "About this author...",
+        name = "CESoft",
+        displayName = "CES Soft",
+        website = "",
+        picture = "https://blossom.primal.net/7e830d7297998db82e8e0ba409639c8581f85e99d7649208100879d84ac537d3.jpg",
+        banner = "",
+        lud06 = "",
+        lud16 = "bbbb@bbbbbb.com",
+        nip05 = ""
+    )
+    val state = HomeState.Init(
+        events = listOf(
+            NostrEvent(
+                kind = NostrKindStandard.TEXT_NOTE,
+                tags = listOf("Tag1", "Tag2"),
+                authKey = "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",
+                authMeta = authMeta1,
+                createdAt = LocalDateTime.now(),
+                content = "This is the content of the Nostr event",
+                json = "{\"id\":\"9edcf548dce279d324a052bed5e70201377f3858df89c129122f1c4c48f53b4f\",\"pubkey\":\"1e67de3754171071d3cf9b44b6e546bd94fd0a2ca3fb4dbbb1b054685c9116e4\",\"created_at\":1747399522,\"kind\":1,\"tags\":[],\"content\":\"Interviewé sur RTL ! \\nEnlèvements liés aux cryptomonnaies : les mythes d’argent facile qui attirent les ravisseurs \\nhttps://www.rtl.fr/actu/sciences-tech/enlevements-lies-aux-cryptomonnaies-les-mythes-d-argent-facile-qui-attirent-les-ravisseurs-7900505683\\n#nostrfr\",\"sig\":\"9badf62758cad7aeb0b69bf1814e1e05010dd067f76a23a9909e1722916e80b4293f9fc2e4adefa3a75688b780ac109392f39ea4761d5676a9ef75c813db64b9\"}"
+            ),
+            NostrEvent(
+                kind = NostrKindStandard.TEXT_NOTE,
+                tags = listOf("Tag01", "Tag02"),
+                authKey = "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",
+                authMeta = authMeta2,
+                createdAt = LocalDateTime.now(),
+                content = "This is more content of another Nostr event",
+                json = "{\"id\":\"24364fd48889af7408ed60bcea29b6d18bc00c99a39256c1827c0741f92256f2\",\"pubkey\":\"aac9cfd55415fb5a175f131238c37386f7c24a7e0fc9ddace56fac72edf06307\",\"created_at\":1747399520,\"kind\":1,\"tags\":[[\"t\",\"meme\"],[\"t\",\"memestr\"],[\"t\",\"nostrmeme\"]],\"content\":\"https://cdn.nostr.build/i/cced0b8d75dca9ac959b3810f11286768e3fca227c93deee97f69b0485afb78b.jpg #meme #memestr #nostrmeme\",\"sig\":\"47ec307abb97c087de104afefd400c3670a50ccffb1152790fce6f1ff7eaca7c7f97c691cf936b4ff5bd79d91253b38c40083cfd3e52fa127265b9116f914a87\"}"
+            )
+        )
+    )
+    Surface(modifier = Modifier.fillMaxSize()) {
+        HomeEventList(state) {}
     }
 }

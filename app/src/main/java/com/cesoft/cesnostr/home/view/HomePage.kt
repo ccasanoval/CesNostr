@@ -66,7 +66,7 @@ private fun HomePage_Preview() {
         picture = "https://cortados.freevar.com/web/front/images/scorpion_s.png",
         banner = "",
         lud06 = "aaaa@aaaa.com",
-        lud16 = "",
+        lud16 = "aaaa@aaaa.com",
         nip05 = ""
     )
     val authMeta2 = NostrMetadata(
@@ -78,7 +78,7 @@ private fun HomePage_Preview() {
         picture = "https://blossom.primal.net/7e830d7297998db82e8e0ba409639c8581f85e99d7649208100879d84ac537d3.jpg",
         banner = "",
         lud06 = "",
-        lud16 = "",
+        lud16 = "bbbb@bbbbbb.com",
         nip05 = ""
     )
     val state = HomeState.Init(
