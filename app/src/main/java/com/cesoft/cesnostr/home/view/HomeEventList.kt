@@ -26,8 +26,8 @@ import com.cesoft.cesnostr.common.LinkifyText
 import com.cesoft.cesnostr.home.vmi.HomeIntent
 import com.cesoft.cesnostr.home.vmi.HomeState
 import com.cesoft.cesnostr.ui.theme.SepMin
-import rust.nostr.sdk.Event
-import rust.nostr.sdk.Metadata
+import com.cesoft.domain.entity.NostrEvent
+import com.cesoft.domain.entity.NostrMetadata
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,12 +61,12 @@ internal fun HomeEventList(
                         AuthorMetadata(event, metadata)
 
                         // Time and type
-                        Text(event.createdAt().toHumanDatetime())
-                        Text("${event.kind()} (${event.kind().asStd()?.name})")
+                        Text(event.createdAt.toString())
+                        Text("${event.kind} (${event.kind.ordinal})")
 
                         // Content
                         HorizontalDivider()
-                        LinkifyText(event.content())
+                        LinkifyText(event.content)
                     }
                 }
             }
@@ -76,12 +76,13 @@ internal fun HomeEventList(
 
 @Composable
 private fun AuthorMetadata(
-    event: Event,
-    metadata: Map<String, Metadata>
+    event: NostrEvent,
+    metadata: Map<String, NostrMetadata>
 ) {
-    var meta: Metadata? = null
+    var meta: NostrMetadata? = null
     for(m in metadata) {
-        if(m.key == event.author().toHex()) {
+        android.util.Log.e("HomeEventList", "AuthorMetadata------------- ${m.key} <> ${event.auth}")
+        if(m.key == event.auth) {
             meta = m.value
             break
         }
@@ -90,7 +91,7 @@ private fun AuthorMetadata(
         Row(modifier = Modifier.padding(SepMin)) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(it.getPicture())
+                    .data(it.picture)
                     .crossfade(true)
                     .build(),
                 placeholder = painterResource(android.R.drawable.ic_menu_report_image),
@@ -100,8 +101,8 @@ private fun AuthorMetadata(
                 //colorFilter = ColorFilter.tint(Color.Unspecified)
             )
             Column(modifier = Modifier.padding(start = SepMin)) {
-                Text(it.getDisplayName() ?: it.getName() ?: "?")
-                Text(it.getLud16() ?: "", color = MaterialTheme.colorScheme.outline)
+                Text(it.displayName)
+                Text(it.lud16, color = MaterialTheme.colorScheme.outline)
             }
         }
     }

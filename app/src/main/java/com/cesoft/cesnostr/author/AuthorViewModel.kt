@@ -1,6 +1,5 @@
 package com.cesoft.cesnostr.author
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adidas.mvi.MviHost
@@ -11,26 +10,22 @@ import com.cesoft.cesnostr.author.vmi.AuthorIntent
 import com.cesoft.cesnostr.author.vmi.AuthorSideEffect
 import com.cesoft.cesnostr.author.vmi.AuthorState
 import com.cesoft.cesnostr.author.vmi.AuthorTransform
-import com.cesoft.domain.AppError
+import com.cesoft.domain.entity.NostrEvent
+import com.cesoft.domain.entity.NostrKindStandard
+import com.cesoft.domain.entity.NostrMetadata
+import com.cesoft.domain.usecase.GetEventsUC
+import com.cesoft.domain.usecase.GetKeysUC
+import com.cesoft.domain.usecase.GetUserMetadataUC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
-import rust.nostr.sdk.Client
-import rust.nostr.sdk.Filter
-import rust.nostr.sdk.Keys
-import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindStandard
-import rust.nostr.sdk.LogLevel
-import rust.nostr.sdk.Metadata
-import rust.nostr.sdk.NostrSigner
-import rust.nostr.sdk.PublicKey
-import rust.nostr.sdk.initLogger
-import java.time.Duration
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthorViewModel @Inject constructor(
-    //private val getByCounty: GetByCountyUC
+    private val getKeys: GetKeysUC,
+    private val getEvents: GetEventsUC,
+    private val getUserMetadata: GetUserMetadataUC,
 ): ViewModel(), MviHost<AuthorIntent, State<AuthorState, AuthorSideEffect>> {
 
     private val reducer: Reducer<AuthorIntent, State<AuthorState, AuthorSideEffect>> = Reducer(
@@ -65,6 +60,34 @@ class AuthorViewModel @Inject constructor(
 
 
     private suspend fun fetch(): AuthorTransform.GoInit {
+
+        /*val res: Result<List<NostrEvent>> = getEvents(
+            kind = NostrKindStandard.TEXT_NOTE,
+            authList = listOf(
+                "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",//CES
+                "npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv",//BTC
+            )
+        )*/
+        //TODO: This page should receive de list of authors
+        //TODO: Develop this in use case
+        val map = mutableMapOf<String, NostrMetadata>()
+        val authList = listOf(
+            "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",//CES
+            "npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv",//BTC
+        )
+        var error: Throwable? = null
+        for(a in authList) {
+            val res: Result<NostrMetadata> = getUserMetadata(a)
+            res.getOrNull()?.let { map[a] = it }
+            res.exceptionOrNull()?.let { error = it }
+        }
+        return if(map.isNotEmpty()) {
+            AuthorTransform.GoInit(metadata = map)
+        } else {
+            AuthorTransform.GoInit(error = error ?: UnknownError())
+        }
+
+/*
         try {
             Log.e("AAA", "********************************************* FETCH 0")
             initLogger(LogLevel.INFO)
@@ -91,18 +114,6 @@ class AuthorViewModel @Inject constructor(
             metadataEvents.forEach { m ->
                 metadata[m.author().toHex()] = Metadata.fromJson(m.content())
                 android.util.Log.e("AA", "---------meta1: ${m.asJson()}")
-                //      "id":"2ae631c0e256d373f87f47418fdc25fea168cd0b8c18949ad7923c18bd137ff9",
-                //      "pubkey":"cc5036ac7ef9c69eb7780e439cd5023fdefcefc06ecfdf455ca26880dfed8df1",
-                //      "created_at":1745489671,"kind":0,
-                //      "tags":[["alt","User profile for Opus2501"]],
-                //      "content":"{
-                //          "name":"Opus2501",
-                //          "display_name":"Opus2501",
-                //          "picture":"https://cortados.freevar.com/web/front/images/scorpion_s.png",
-                //          "website":"https://cortados.freevar.com",
-                //          "lud16":"wordybritish81@walletofsatoshi.com",
-                //          "banner":"https://cortados.freevar.com"}",
-                //          "sig":"94c21c13ddf9a31f1d5571555a095b79271d3ff5b650fda70b3219bf572904d73b98953f8583cda79fd4c10e341dffe0d23768bbcee00b55cb59824f7d5d0a0c"
             }
 
             val filter = Filter()
@@ -150,7 +161,7 @@ class AuthorViewModel @Inject constructor(
         catch (e: Exception) {
             Log.e(TAG, "fetch:failure:---------------- $e")
             return AuthorTransform.GoInit(error = e)
-        }
+        }*/
     }
 
     companion object {

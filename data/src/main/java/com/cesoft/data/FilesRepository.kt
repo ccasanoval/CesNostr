@@ -8,8 +8,9 @@ import qrcode.QRCode
 import qrcode.color.Colors
 import qrcode.render.QRCodeGraphics
 import java.io.File
+import javax.inject.Inject
 
-class FilesRepository(
+class FilesRepository @Inject constructor(
     private val context: Context,
 ): FilesRepositoryContract {
     override suspend fun createQrImage(

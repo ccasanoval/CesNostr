@@ -3,8 +3,8 @@ package com.cesoft.cesnostr.home.vmi
 import com.adidas.mvi.sideeffects.SideEffects
 import com.adidas.mvi.transform.SideEffectTransform
 import com.adidas.mvi.transform.ViewTransform
-import rust.nostr.sdk.Event
-import rust.nostr.sdk.Metadata
+import com.cesoft.domain.entity.NostrEvent
+import com.cesoft.domain.entity.NostrMetadata
 
 internal object HomeTransform {
 
@@ -15,8 +15,8 @@ internal object HomeTransform {
     }
 
     data class GoInit(
-        val events: List<Event> = listOf(),
-        val metadata: Map<String, Metadata> = mapOf(),
+        val events: List<NostrEvent> = listOf(),
+        val metadata: Map<String, NostrMetadata> = mapOf(),
         val error: Throwable? = null,
     ) : ViewTransform<HomeState, HomeSideEffect>() {
         override fun mutate(currentState: HomeState): HomeState {

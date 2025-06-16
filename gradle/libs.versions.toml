@@ -6,10 +6,10 @@ coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.9.0"
+lifecycleRuntimeKtx = "2.9.1"
 activityCompose = "1.10.1"
-composeBom = "2025.05.01"
-appcompat = "1.7.0"
+composeBom = "2025.06.00"
+appcompat = "1.7.1"
 material = "1.12.0"
 hilt = "2.56.2"
 hiltNavigationCompose = "1.2.0"
@@ -22,6 +22,7 @@ datastorePreferences = "1.1.7"
 qrcodeKotlin = "4.4.1"
 quickieBundled = "1.11.0"
 securityCrypto = "1.0.0"
+firebaseDatabaseKtx = "21.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,9 +42,6 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-#Release v0.32.0
-# Note for kotlin devs: from this release the packages will be published at org.rust-nostr instead of io.github.rust-nostr.
-#nostr-sdk = { module = "io.github.rust-nostr:nostr-sdk", version.ref = "nostrSdk" }
 nostr-sdk = { module = "org.rust-nostr:nostr-sdk", version.ref = "nostrSdk" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
@@ -55,6 +53,7 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 qrcode-kotlin = { module = "io.github.g0dkar:qrcode-kotlin", version.ref = "qrcodeKotlin" }
 quickie-bundled = { module = "io.github.g00fy2.quickie:quickie-bundled", version.ref = "quickieBundled" }
+firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

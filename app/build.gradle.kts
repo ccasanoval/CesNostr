@@ -66,7 +66,7 @@ dependencies {
     implementation(project(":domain"))
 
     /// Nostr
-    implementation(libs.nostr.sdk)//TODO: Moved to data, delete here?
+    //implementation(libs.nostr.sdk)//TODO: Moved to data, delete here?
     //implementation("net.java.dev.jna:jna:5.17.0@aar")//Don't replace with catalog, problem with @aar
 
     // DI

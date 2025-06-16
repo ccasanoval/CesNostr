@@ -3,8 +3,7 @@ package com.cesoft.cesnostr.author.vmi
 import com.adidas.mvi.sideeffects.SideEffects
 import com.adidas.mvi.transform.SideEffectTransform
 import com.adidas.mvi.transform.ViewTransform
-import rust.nostr.sdk.Event
-import rust.nostr.sdk.Metadata
+import com.cesoft.domain.entity.NostrMetadata
 
 internal object AuthorTransform {
 
@@ -15,7 +14,7 @@ internal object AuthorTransform {
     }
 
     data class GoInit(
-        val metadata: Map<String, Metadata> = mapOf(),
+        val metadata: Map<String, NostrMetadata> = mapOf(),
         val error: Throwable? = null,
     ) : ViewTransform<AuthorState, AuthorSideEffect>() {
         override fun mutate(currentState: AuthorState): AuthorState {

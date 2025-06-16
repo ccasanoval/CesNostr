@@ -5,8 +5,9 @@ import com.cesoft.data.pref.deleteSecure
 import com.cesoft.data.pref.readSecure
 import com.cesoft.data.pref.writeSecure
 import com.cesoft.domain.repo.PrefsRepositoryContract
+import javax.inject.Inject
 
-class PrefsRepository(
+class PrefsRepository @Inject constructor(
     private val context: Context,
 ): PrefsRepositoryContract {
 
