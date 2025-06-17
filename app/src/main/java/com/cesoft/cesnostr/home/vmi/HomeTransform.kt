@@ -12,6 +12,12 @@ internal object HomeTransform {
             return HomeState.Loading
         }
     }
+//
+//    data class GoAuthor(val npub: String): ViewTransform<HomeState, HomeSideEffect>() {
+//        override fun mutate(currentState: HomeState): HomeState {
+//            return HomeState.Loading
+//        }
+//    }
 
     data class GoInit(
         val events: List<NostrEvent> = listOf(),

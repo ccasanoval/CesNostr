@@ -2,8 +2,8 @@ package com.cesoft.domain
 
 sealed class AppError: Throwable() {
 
-    data object UnknownError: AppError() {
-        private fun readResolve(): Any = UnknownError
+    data object NotKnownError: AppError() {
+        private fun readResolve(): Any = NotKnownError
     }
 
     data class InternalError(val code: Int = 0, val msg: String = ""): AppError()

@@ -14,6 +14,7 @@ import com.cesoft.cesnostr.home.vmi.HomeSideEffect
 import com.cesoft.cesnostr.home.vmi.HomeState
 import com.cesoft.cesnostr.home.vmi.HomeTransform
 import com.cesoft.cesnostr.view.Page
+import com.cesoft.domain.AppError.NotKnownError
 import com.cesoft.domain.entity.NostrEvent
 import com.cesoft.domain.entity.NostrKindStandard
 import com.cesoft.domain.usecase.GetEventsUC
@@ -43,16 +44,18 @@ class HomeViewModel @Inject constructor(
             HomeIntent.Close -> executeClose()
             HomeIntent.Load -> executeLoad()
             HomeIntent.Reload -> executeReload()
+            is HomeIntent.Author -> executeAuthor(intent.npub)
         }
 
     private fun executeClose() = flow {
         emit(HomeTransform.AddSideEffect(HomeSideEffect.Close))
     }
-
     private fun executeReload() = flow {
         emit(HomeTransform.GoReload)
     }
-
+    private fun executeAuthor(npub: String) = flow {
+        emit(HomeTransform.AddSideEffect(HomeSideEffect.Author(npub)))
+    }
     private fun executeLoad() = flow {
         emit(fetch())
     }
@@ -72,10 +75,10 @@ class HomeViewModel @Inject constructor(
             if(events != null)
                 HomeTransform.GoInit(events = events)//, metadata = map)
             else
-                HomeTransform.GoInit(error = UnknownError())
+                HomeTransform.GoInit(error = NotKnownError)
         }
         else {
-            val error = res.exceptionOrNull() ?: UnknownError()
+            val error = res.exceptionOrNull() ?: NotKnownError
             android.util.Log.e(TAG, "fetch:e:--------------- $error")
             HomeTransform.GoInit(error = error)
         }
@@ -92,6 +95,9 @@ class HomeViewModel @Inject constructor(
             }
             HomeSideEffect.Close -> {
                 (context as Activity).finish()
+            }
+            is HomeSideEffect.Author -> {
+                navController.navigate(Page.Author.createRoute(sideEffect.npub))
             }
         }
     }

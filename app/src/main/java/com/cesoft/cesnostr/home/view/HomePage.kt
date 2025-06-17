@@ -13,6 +13,7 @@ import com.cesoft.cesnostr.common.LoadingCompo
 import com.cesoft.cesnostr.home.HomeViewModel
 import com.cesoft.cesnostr.home.vmi.HomeIntent
 import com.cesoft.cesnostr.home.vmi.HomeState
+import com.cesoft.domain.AppError.NotKnownError
 import com.cesoft.domain.entity.NostrEvent
 import com.cesoft.domain.entity.NostrKindStandard
 import com.cesoft.domain.entity.NostrMetadata
@@ -69,18 +70,6 @@ private fun HomePage_Preview() {
         lud16 = "aaaa@aaaa.com",
         nip05 = ""
     )
-    val authMeta2 = NostrMetadata(
-        npub = "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",
-        about = "About this author...",
-        name = "CESoft",
-        displayName = "CES Soft",
-        website = "",
-        picture = "https://blossom.primal.net/7e830d7297998db82e8e0ba409639c8581f85e99d7649208100879d84ac537d3.jpg",
-        banner = "",
-        lud06 = "",
-        lud16 = "bbbb@bbbbbb.com",
-        nip05 = ""
-    )
     val state = HomeState.Init(
         events = listOf(
             NostrEvent(
@@ -96,7 +85,7 @@ private fun HomePage_Preview() {
                 kind = NostrKindStandard.TEXT_NOTE,
                 tags = listOf("Tag01", "Tag02"),
                 authKey = "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",
-                authMeta = authMeta2,
+                authMeta = bitcoinMetadata,
                 createdAt = LocalDateTime.now(),
                 content = "This is more content of another Nostr event",
                 json = "{\"id\":\"24364fd48889af7408ed60bcea29b6d18bc00c99a39256c1827c0741f92256f2\",\"pubkey\":\"aac9cfd55415fb5a175f131238c37386f7c24a7e0fc9ddace56fac72edf06307\",\"created_at\":1747399520,\"kind\":1,\"tags\":[[\"t\",\"meme\"],[\"t\",\"memestr\"],[\"t\",\"nostrmeme\"]],\"content\":\"https://cdn.nostr.build/i/cced0b8d75dca9ac959b3810f11286768e3fca227c93deee97f69b0485afb78b.jpg #meme #memestr #nostrmeme\",\"sig\":\"47ec307abb97c087de104afefd400c3670a50ccffb1152790fce6f1ff7eaca7c7f97c691cf936b4ff5bd79d91253b38c40083cfd3e52fa127265b9116f914a87\"}"
@@ -120,7 +109,7 @@ private fun HomePage_Empty_Preview() {
 @Preview
 @Composable
 private fun HomePage_Error_Preview() {
-    val state = HomeState.Init(error = UnknownError())
+    val state = HomeState.Init(error = NotKnownError)
     Surface(modifier = Modifier.fillMaxSize()) {
         HomeInit(state) {}
     }

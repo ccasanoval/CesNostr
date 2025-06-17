@@ -46,4 +46,6 @@
     <string name="avatar">Avatar</string>
     <string name="banner">Banner</string>
 
+    <string name="author">Autor</string>
+
 </resources>

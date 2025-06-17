@@ -9,7 +9,7 @@ fun Throwable.toHumanMessage(context: Context): String {
         AppError.NotFound -> context.getString(R.string.error_not_found)
         AppError.InvalidNostrKey -> context.getString(R.string.error_nostr_key)
         AppError.InvalidMetadata -> context.getString(R.string.error_metadata)
-        AppError.UnknownError -> context.getString(R.string.error_unknown)
+        AppError.NotKnownError -> context.getString(R.string.error_unknown)
         else -> context.getString(R.string.error_unknown) + " : " + message
     }
 }

@@ -14,7 +14,7 @@ internal object AuthorTransform {
     }
 
     data class GoInit(
-        val metadata: Map<String, NostrMetadata> = mapOf(),
+        val metadata: NostrMetadata = NostrMetadata.Empty,
         val error: Throwable? = null,
     ) : ViewTransform<AuthorState, AuthorSideEffect>() {
         override fun mutate(currentState: AuthorState): AuthorState {
