@@ -1,9 +1,12 @@
 package com.cesoft.cesnostr.home.view
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,6 +38,7 @@ import com.cesoft.cesnostr.home.vmi.HomeIntent
 import com.cesoft.cesnostr.home.vmi.HomeState
 import com.cesoft.cesnostr.ui.theme.FontSizeBig
 import com.cesoft.cesnostr.ui.theme.FontSizeMed
+import com.cesoft.cesnostr.ui.theme.SepMax
 import com.cesoft.cesnostr.ui.theme.SepMin
 import com.cesoft.domain.entity.NostrEvent
 import com.cesoft.domain.entity.NostrKindStandard
@@ -59,6 +63,9 @@ internal fun HomeEventList(
         state = refreshState
     ) {
         LazyColumn {
+            if(events.isEmpty()) {
+                item { Spacer(Modifier.fillMaxWidth().height(SepMax*5)) }
+            }
             for (event in events) {
                 item {
                     Column {
@@ -69,7 +76,7 @@ internal fun HomeEventList(
 
                         // Author metadata
                         AuthorMetadata(event) {
-                            reduce(HomeIntent.Author(event.authKey))
+                            reduce(HomeIntent.Author(event.npub))
                         }
 
                         // Time and type
@@ -149,30 +156,32 @@ val opusMetadata = NostrMetadata(
     nip05=""
 )
 
+val testEvents = listOf(
+    NostrEvent(
+        kind = NostrKindStandard.TEXT_NOTE,
+        tags = listOf("Tag1", "Tag2"),
+        npub = opusMetadata.npub,
+        authMeta = opusMetadata,
+        createdAt = LocalDateTime.now(),
+        content = "This is the content of the Nostr event",
+        json = "{\"id\":\"9edcf548dce279d324a052bed5e70201377f3858df89c129122f1c4c48f53b4f\",\"pubkey\":\"1e67de3754171071d3cf9b44b6e546bd94fd0a2ca3fb4dbbb1b054685c9116e4\",\"created_at\":1747399522,\"kind\":1,\"tags\":[],\"content\":\"Interviewé sur RTL ! \\nEnlèvements liés aux cryptomonnaies : les mythes d’argent facile qui attirent les ravisseurs \\nhttps://www.rtl.fr/actu/sciences-tech/enlevements-lies-aux-cryptomonnaies-les-mythes-d-argent-facile-qui-attirent-les-ravisseurs-7900505683\\n#nostrfr\",\"sig\":\"9badf62758cad7aeb0b69bf1814e1e05010dd067f76a23a9909e1722916e80b4293f9fc2e4adefa3a75688b780ac109392f39ea4761d5676a9ef75c813db64b9\"}"
+    ),
+    NostrEvent(
+        kind = NostrKindStandard.TEXT_NOTE,
+        tags = listOf("Tag01", "Tag02"),
+        npub = bitcoinMetadata.npub,
+        authMeta = bitcoinMetadata,
+        createdAt = LocalDateTime.now(),
+        content = "This is more content of another Nostr event",
+        json = "{\"id\":\"24364fd48889af7408ed60bcea29b6d18bc00c99a39256c1827c0741f92256f2\",\"pubkey\":\"aac9cfd55415fb5a175f131238c37386f7c24a7e0fc9ddace56fac72edf06307\",\"created_at\":1747399520,\"kind\":1,\"tags\":[[\"t\",\"meme\"],[\"t\",\"memestr\"],[\"t\",\"nostrmeme\"]],\"content\":\"https://cdn.nostr.build/i/cced0b8d75dca9ac959b3810f11286768e3fca227c93deee97f69b0485afb78b.jpg #meme #memestr #nostrmeme\",\"sig\":\"47ec307abb97c087de104afefd400c3670a50ccffb1152790fce6f1ff7eaca7c7f97c691cf936b4ff5bd79d91253b38c40083cfd3e52fa127265b9116f914a87\"}"
+    )
+)
+
 @Preview
 @Composable
 private fun HomeEventList_Preview() {
     val state = HomeState.Init(
-        events = listOf(
-            NostrEvent(
-                kind = NostrKindStandard.TEXT_NOTE,
-                tags = listOf("Tag1", "Tag2"),
-                authKey = opusMetadata.npub,
-                authMeta = opusMetadata,
-                createdAt = LocalDateTime.now(),
-                content = "This is the content of the Nostr event",
-                json = "{\"id\":\"9edcf548dce279d324a052bed5e70201377f3858df89c129122f1c4c48f53b4f\",\"pubkey\":\"1e67de3754171071d3cf9b44b6e546bd94fd0a2ca3fb4dbbb1b054685c9116e4\",\"created_at\":1747399522,\"kind\":1,\"tags\":[],\"content\":\"Interviewé sur RTL ! \\nEnlèvements liés aux cryptomonnaies : les mythes d’argent facile qui attirent les ravisseurs \\nhttps://www.rtl.fr/actu/sciences-tech/enlevements-lies-aux-cryptomonnaies-les-mythes-d-argent-facile-qui-attirent-les-ravisseurs-7900505683\\n#nostrfr\",\"sig\":\"9badf62758cad7aeb0b69bf1814e1e05010dd067f76a23a9909e1722916e80b4293f9fc2e4adefa3a75688b780ac109392f39ea4761d5676a9ef75c813db64b9\"}"
-            ),
-            NostrEvent(
-                kind = NostrKindStandard.TEXT_NOTE,
-                tags = listOf("Tag01", "Tag02"),
-                authKey = bitcoinMetadata.npub,
-                authMeta = bitcoinMetadata,
-                createdAt = LocalDateTime.now(),
-                content = "This is more content of another Nostr event",
-                json = "{\"id\":\"24364fd48889af7408ed60bcea29b6d18bc00c99a39256c1827c0741f92256f2\",\"pubkey\":\"aac9cfd55415fb5a175f131238c37386f7c24a7e0fc9ddace56fac72edf06307\",\"created_at\":1747399520,\"kind\":1,\"tags\":[[\"t\",\"meme\"],[\"t\",\"memestr\"],[\"t\",\"nostrmeme\"]],\"content\":\"https://cdn.nostr.build/i/cced0b8d75dca9ac959b3810f11286768e3fca227c93deee97f69b0485afb78b.jpg #meme #memestr #nostrmeme\",\"sig\":\"47ec307abb97c087de104afefd400c3670a50ccffb1152790fce6f1ff7eaca7c7f97c691cf936b4ff5bd79d91253b38c40083cfd3e52fa127265b9116f914a87\"}"
-            )
-        )
+        events = testEvents
     )
     Surface(modifier = Modifier.fillMaxSize()) {
         HomeEventList(state) {}

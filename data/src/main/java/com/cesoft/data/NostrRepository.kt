@@ -1,6 +1,7 @@
 package com.cesoft.data
 
 import android.util.Log
+import com.cesoft.domain.AppError
 import com.cesoft.domain.entity.NostrEvent
 import com.cesoft.domain.entity.NostrKeys
 import com.cesoft.domain.entity.NostrKindStandard
@@ -10,19 +11,16 @@ import com.cesoft.domain.entity.NostrPublicKey
 import com.cesoft.domain.repo.NostrRepositoryContract
 import rust.nostr.sdk.Client
 import rust.nostr.sdk.Event
+import rust.nostr.sdk.EventBuilder
+import rust.nostr.sdk.Events
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Keys
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
-import rust.nostr.sdk.Metadata
 import rust.nostr.sdk.NostrSigner
 import rust.nostr.sdk.PublicKey
-import rust.nostr.sdk.Tags
 import java.time.Duration
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 import javax.inject.Inject
-
 
 class NostrRepository @Inject constructor(
     val prefsRepository: PrefsRepository
@@ -38,74 +36,6 @@ class NostrRepository @Inject constructor(
         client.addRelay("wss://nostr.swiss-enigma.ch")
     }
 
-    private fun KindStandard?.toEntity(): NostrKindStandard = when(this) {
-        KindStandard.TEXT_NOTE -> NostrKindStandard.TEXT_NOTE
-        KindStandard.REPOST -> NostrKindStandard.REPOST
-        else -> NostrKindStandard.UNKNOWN
-    }
-
-    private fun Tags.toEntity(): List<String> {
-        val tags = mutableListOf<String>()
-        for(t in this.toVec()) {
-            tags.add(t.toString())
-        }
-        return tags
-    }
-
-    private fun Event.toEntity(authMetaList: List<NostrMetadata>): NostrEvent {
-        var authMeta: NostrMetadata? = null
-        for(meta in authMetaList) {
-            if(meta.npub == author().toBech32()) {
-                authMeta = meta
-                break
-            }
-        }
-        return toEntity(authMeta)
-    }
-
-    private fun Event.toEntity(authMeta: NostrMetadata?): NostrEvent {
-        val createdAt = LocalDateTime.ofEpochSecond(createdAt().asSecs().toLong(), 0, ZoneOffset.UTC)
-        return NostrEvent(
-            kind = kind().asStd().toEntity(),
-            tags = tags().toEntity(),
-            authKey = author().toBech32(),
-            authMeta = authMeta ?: NostrMetadata.Empty,
-            createdAt = createdAt,
-            content = content(),
-            json = asJson()
-        )
-    }
-
-    private fun Event.toMetadata(npub: String): NostrMetadata {
-        val metadata = Metadata.fromJson(content()).asRecord()
-        return NostrMetadata(
-            npub = npub,
-            about = metadata.about ?: "",
-            name = metadata.name ?: "",
-            displayName = metadata.displayName ?: "",
-            website = metadata.website ?: "",
-            picture = metadata.picture ?: "",
-            banner = metadata.banner ?: "",
-            lud06 = metadata.lud06 ?: "",
-            lud16 = metadata.lud16 ?: "",
-            nip05 = metadata.nip05 ?: "",
-        )
-    }
-
-    private fun NostrMetadata.toDto(): Metadata {
-        val metadata = Metadata()
-        if(name.isNotBlank()) metadata.setName(name)
-        if(displayName.isNotBlank()) metadata.setDisplayName(displayName)
-        if(about.isNotBlank()) metadata.setAbout(about)
-        if(website.isNotBlank()) metadata.setWebsite(website)
-        if(picture.isNotBlank()) metadata.setPicture(picture)
-        if(banner.isNotBlank()) metadata.setBanner(banner)
-        if(lud16.isNotBlank()) metadata.setLud16(lud16)
-        if(lud06.isNotBlank()) metadata.setLud06(lud06)
-        if(nip05.isNotBlank()) metadata.setNip05(nip05)
-        return metadata
-    }
-
     override suspend fun getUserMetadata(npub: String): Result<NostrMetadata> {
         try {
             val publicKey = PublicKey.parse(npub)
@@ -116,14 +46,16 @@ class NostrRepository @Inject constructor(
             // Connect
             client.connect()
             // Filter metadata
-            val filterMD = Filter()
-                .kind(Kind.fromStd(KindStandard.METADATA))
-                .author(publicKey)
-                .limit(1u)
-            val event = client.fetchEvents(filterMD, Duration.ofSeconds(5L)).toVec().first()
+//            val filterMD = Filter()
+//                .kind(Kind.fromStd(KindStandard.METADATA))
+//                .author(publicKey)
+//                .limit(1u)
+//            val event = client.fetchEvents(filterMD, Duration.ofSeconds(5L)).toVec().first()
+            val meta = client.fetchMetadata(publicKey, Duration.ofSeconds(5L))?.toEntity(npub)
             // Return metadata
-            Log.e(TAG, "getUserMetadata:e:----------------- ${event.toMetadata(npub).displayName}, ${event.toMetadata(npub).name}")
-            return Result.success(event.toMetadata(npub))
+            Log.e(TAG, "getUserMetadata:----------------- ${meta?.displayName}, ${meta?.name}")
+            return if(meta != null) return Result.success(meta)
+            else Result.failure(AppError.NotKnownError)
         }
         catch(e: Exception) {
             Log.e(TAG, "getUserMetadata:e:----------------- $e : $npub")
@@ -165,28 +97,20 @@ class NostrRepository @Inject constructor(
         }
     }
 
-    fun NostrKindStandard?.toDto(): KindStandard = when(this) {
-        NostrKindStandard.TEXT_NOTE -> KindStandard.TEXT_NOTE
-        NostrKindStandard.NOSTR_CONNECT -> KindStandard.NOSTR_CONNECT
-        NostrKindStandard.REPOST -> KindStandard.REPOST
-        NostrKindStandard.COMMENT -> KindStandard.COMMENT
-        NostrKindStandard.METADATA -> KindStandard.METADATA
-        else -> KindStandard.TEXT_NOTE
-    }
-
-    override suspend fun getEvents(
+    override suspend fun fetchEvents(
         kind: NostrKindStandard?,
-        authList: List<String>
+        authList: List<String>,
+        limit: ULong
     ): Result<List<NostrEvent>> {
         try {
-            val client = Client()
-//            var client = prefsRepository.readPrivateKey()?.let {
-//                val keys = Keys.parse(it)
-//                val signer = NostrSigner.keys(keys)
-//                Client(signer = signer)
-//            } ?: run {
-//                Client()
-//            }
+            //val client = Client()
+            var client = prefsRepository.readPrivateKey()?.let {
+                val keys = Keys.parse(it)
+                val signer = NostrSigner.keys(keys)
+                Client(signer = signer)
+            } ?: run {
+                Client()
+            }
             addRelays(client)
             client.connect()
 
@@ -198,9 +122,8 @@ class NostrRepository @Inject constructor(
             val filter = Filter()
                 .kind(Kind.fromStd(kind?.toDto()!!))
                 .authors(authListKeys)
-                .limit(15u)
+                .limit(limit)
             val events = client.fetchEvents(filter, Duration.ofSeconds(5L)).toVec()
-            //for(e in events)android.util.Log.e(TAG, "getEvents:--------------- $e")
 
             val filterMeta = Filter()
                 .kind(Kind.fromStd(KindStandard.METADATA))
@@ -211,7 +134,79 @@ class NostrRepository @Inject constructor(
             return Result.success(events.map { it.toEntity(auths) })
         }
         catch (e: Exception) {
-            Log.e(TAG, "getEvents:e:--------------- $e")
+            Log.e(TAG, "fetchEvents:e:--------------------- $e")
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun sendEvent(event: NostrEvent): Result<Unit> {
+        try {
+            var keys: Keys? = null
+            var client = prefsRepository.readPrivateKey()?.let {
+                keys = Keys.parse(it)
+                val signer = NostrSigner.keys(keys)
+                Client(signer = signer)
+            } ?: run {
+                Client()
+            }
+            addRelays(client)
+            client.connect()
+
+            when (event.kind) {
+                NostrKindStandard.TEXT_NOTE -> {
+                    //val tags = event.tags.map { it.toDto() }
+                    val eb = EventBuilder
+                        .textNote(event.content)
+                        .allowSelfTagging()
+                        .pow(10u)
+                    keys?.let { eb.signWithKeys(keys) }
+                    //eb.tags(event.tags)
+                    client.sendEventBuilder(eb)
+                }
+                else -> return Result.failure(AppError.NotKnownError)
+            }
+            return Result.success(Unit)
+        }
+        catch(e: Exception) {
+            return Result.failure(e)
+        }
+    }
+
+    //https://github.com/nostr-protocol/nips/blob/master/02.md
+    override suspend fun sendFollowList(followList: List<String>): Result<Unit> {
+        try {
+            var keys: Keys? = null
+            var client = prefsRepository.readPrivateKey()?.let {
+                keys = Keys.parse(it)
+                val signer = NostrSigner.keys(keys)
+                Client(signer = signer)
+            } ?: run {
+                Client()
+            }
+            addRelays(client)
+            client.connect()
+
+            /// Sending follow list deletes previous, so you must always append previous list
+            val newFollowList = mutableListOf<String>()
+            newFollowList.addAll(followList)
+
+            //FOLLOW_SET : https://github.com/nostr-protocol/nips/blob/master/02.md
+            //CONTACT_LIST : idem?
+            val filter = Filter()
+                .kind(Kind.fromStd(KindStandard.CONTACT_LIST))//
+                //.limit(15u)//TODO: TEST
+            val events: Events = client.fetchEvents(filter, Duration.ofSeconds(2L))
+            for (e in events.toVec()) {
+                android.util.Log.e(TAG, "sendFollowList--------------- ${e.asJson()}")
+            }
+
+            val publicKeyList = newFollowList.map { PublicKey.parse(it) }
+            val eb = EventBuilder.followSet("yourCesNstrContactList", publicKeyList)
+            keys?.let { eb.signWithKeys(keys) }
+            client.sendEventBuilder(eb)
+            return Result.success(Unit)
+        }
+        catch(e: Exception) {
             return Result.failure(e)
         }
     }

@@ -9,5 +9,11 @@ interface NostrRepositoryContract {
     suspend fun createUser(metadata: NostrMetadata): Result<NostrKeys>
     suspend fun getUserMetadata(npub: String): Result<NostrMetadata>
     suspend fun getKeys(nsec: String): Result<NostrKeys>
-    suspend fun getEvents(kind: NostrKindStandard?, authList: List<String>): Result<List<NostrEvent>>
+    suspend fun sendFollowList(followList: List<String>): Result<Unit>
+    suspend fun sendEvent(event: NostrEvent): Result<Unit>
+    suspend fun fetchEvents(
+        kind: NostrKindStandard?,
+        authList: List<String>,
+        limit: ULong
+    ): Result<List<NostrEvent>>
 }

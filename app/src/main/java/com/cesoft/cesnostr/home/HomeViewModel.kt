@@ -17,7 +17,8 @@ import com.cesoft.cesnostr.view.Page
 import com.cesoft.domain.AppError.NotKnownError
 import com.cesoft.domain.entity.NostrEvent
 import com.cesoft.domain.entity.NostrKindStandard
-import com.cesoft.domain.usecase.GetEventsUC
+import com.cesoft.domain.usecase.FetchEventsUC
+import com.cesoft.domain.usecase.SendFollowListUC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
@@ -25,7 +26,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getEvents: GetEventsUC,
+    private val getEvents: FetchEventsUC,
+    private val sendFollowList: SendFollowListUC,
 ): ViewModel(), MviHost<HomeIntent, State<HomeState, HomeSideEffect>> {
 
     private val reducer: Reducer<HomeIntent, State<HomeState, HomeSideEffect>> = Reducer(
@@ -61,6 +63,26 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun fetch(): HomeTransform.GoInit {
+/*
+        //TODO: TESTING
+        val r1: Result<Unit> = sendFollowList(
+            listOf("npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv")
+        )
+        if(r1.isSuccess) {
+            android.util.Log.e(TAG, "fetch------- CONTACT_LIST OK -----------")
+        }
+
+        val r: Result<List<NostrEvent>> = getEvents(NostrKindStandard.CONTACT_LIST)
+        if(r.isSuccess) {
+            val es = r.getOrNull() ?: listOf()
+            android.util.Log.e(TAG, "fetch------- CONTACT_LIST -----------")
+            for(ev in es) {
+                android.util.Log.e(TAG, "fetch------- CONTACT_LIST: $ev")
+            }
+        }
+        //TODO: TESTING
+        */
+
         //TODO: List of authors to follow...
         val authList = listOf(
             "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",//CES
@@ -72,8 +94,8 @@ class HomeViewModel @Inject constructor(
         )
         return if(res.isSuccess) {
             val events = res.getOrNull()
-            if(events != null)
-                HomeTransform.GoInit(events = events)//, metadata = map)
+            if(events != null && events.isNotEmpty())
+                HomeTransform.GoInit(events = events)
             else
                 HomeTransform.GoInit(error = NotKnownError)
         }

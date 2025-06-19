@@ -13,6 +13,8 @@ import com.cesoft.cesnostr.account.AccountViewModel
 import com.cesoft.cesnostr.account.view.AccountPage
 import com.cesoft.cesnostr.author.AuthorViewModel
 import com.cesoft.cesnostr.author.view.AuthorPage
+import com.cesoft.cesnostr.follow.FollowViewModel
+import com.cesoft.cesnostr.follow.view.FollowPage
 import com.cesoft.cesnostr.home.view.HomePage
 import com.cesoft.cesnostr.home.HomeViewModel
 import com.cesoft.cesnostr.login.LoginViewModel
@@ -23,6 +25,7 @@ sealed class Page(val route: String) {
     data object Home: Page("home")
     data object Login: Page("login")
     data object Account: Page("account")
+    data object Follow: Page("follow")
     //data class Author(): Page("author")
     data object Author: Page("author/{npub}") {
         private const val ARG_NPUB = "npub"
@@ -50,6 +53,9 @@ fun PageNavigation() {
             }
             composable(route = Page.Author.route) {
                 AuthorPage(navController, hiltViewModel<AuthorViewModel>())
+            }
+            composable(route = Page.Follow.route) {
+                FollowPage(navController, hiltViewModel<FollowViewModel>())
             }
         }
     }

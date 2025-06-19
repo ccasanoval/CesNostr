@@ -6,6 +6,7 @@
     <string name="error_not_found">No hay datos</string>
     <string name="error_nostr_key">Clave Nostr incorrecta</string>
     <string name="error_metadata">Datos del usuario no disponibles</string>
+    <string name="follow_empty_list">Aún no sigues a nadie\nPrueba a buscar algo de tu interés!</string>
 
     <!-- Actions -->
     <string name="close">Cerrar</string>
@@ -20,6 +21,7 @@
     <!-- Menu Items -->
     <string name="menu_account">Tu cuenta</string>
     <string name="menu_search">Buscar…</string>
+    <string name="menu_follow">Siguiendo…</string>
     <string name="menu_settings">Configuración</string>
 
     <!-- Fields -->
@@ -47,5 +49,9 @@
     <string name="banner">Banner</string>
 
     <string name="author">Autor</string>
+
+    <!-- Titles -->
+    <string name="following_authors">Sigues a las cuentas:</string>
+
 
 </resources>

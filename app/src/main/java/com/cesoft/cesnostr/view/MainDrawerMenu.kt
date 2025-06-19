@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DrawerState
@@ -57,6 +58,8 @@ fun MainDrawerMenu(
                         .verticalScroll(rememberScrollState())
                 ) {
                     Spacer(Modifier.height(SepMed))
+
+                    /// App header
                     Text(
                         text = stringResource(R.string.app_name),
                         modifier = Modifier.padding(SepMax),
@@ -73,15 +76,27 @@ fun MainDrawerMenu(
 //                    HorizontalDivider(modifier = Modifier.padding(vertical = SepMed))
 //                    Text("Section 2", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleMedium)
 
+                    /// Follow
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.menu_follow)) },
+                        selected = false,
+                        icon = { Icon(Icons.Outlined.Face, contentDescription = null) },
+                        onClick = {
+                            navController.navigate(Page.Follow.route)
+                            scope.launch { drawerState.close() }
+                        },
+                    )
+
+                    /// Search
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.menu_search)) },
                         selected = false,
                         icon = { Icon(Icons.Outlined.Search, contentDescription = null) },
                         onClick = { /* Handle click */ },
                     )
-
                     HorizontalDivider(modifier = Modifier.padding(vertical = SepMed))
 
+                    /// Account
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.menu_account)) },
                         selected = false,
@@ -92,6 +107,7 @@ fun MainDrawerMenu(
                         }
                     )
 
+                    /// Config
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.menu_settings)) },
                         selected = false,

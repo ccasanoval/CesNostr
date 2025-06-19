@@ -5,13 +5,14 @@ import com.cesoft.domain.entity.NostrKindStandard
 import com.cesoft.domain.repo.NostrRepositoryContract
 import jakarta.inject.Inject
 
-open class GetEventsUC @Inject constructor(
+open class FetchEventsUC @Inject constructor(
     private val repository: NostrRepositoryContract
 ) {
     suspend operator fun invoke(
         kind: NostrKindStandard? = null,
-        authList: List<String>,
+        authList: List<String> = listOf(),
+        limit: ULong = 10u
     ): Result<List<NostrEvent>> {
-        return repository.getEvents(kind, authList)
+        return repository.fetchEvents(kind, authList, limit)
     }
 }

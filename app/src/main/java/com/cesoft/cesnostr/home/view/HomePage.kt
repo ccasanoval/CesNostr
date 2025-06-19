@@ -58,25 +58,13 @@ fun HomePage(
 @Preview
 @Composable
 private fun HomePage_Preview() {
-    val authMeta1 = NostrMetadata(
-        npub = "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",
-        about = "About this author...",
-        name = "CESoft",
-        displayName = "CES Soft",
-        website = "",
-        picture = "https://cortados.freevar.com/web/front/images/scorpion_s.png",
-        banner = "",
-        lud06 = "aaaa@aaaa.com",
-        lud16 = "aaaa@aaaa.com",
-        nip05 = ""
-    )
     val state = HomeState.Init(
         events = listOf(
             NostrEvent(
                 kind = NostrKindStandard.TEXT_NOTE,
                 tags = listOf("Tag1", "Tag2"),
-                authKey = "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",
-                authMeta = authMeta1,
+                npub = opusMetadata.npub,
+                authMeta = opusMetadata,
                 createdAt = LocalDateTime.now(),
                 content = "This is the content of the Nostr event",
                 json = "{\"id\":\"9edcf548dce279d324a052bed5e70201377f3858df89c129122f1c4c48f53b4f\",\"pubkey\":\"1e67de3754171071d3cf9b44b6e546bd94fd0a2ca3fb4dbbb1b054685c9116e4\",\"created_at\":1747399522,\"kind\":1,\"tags\":[],\"content\":\"Interviewé sur RTL ! \\nEnlèvements liés aux cryptomonnaies : les mythes d’argent facile qui attirent les ravisseurs \\nhttps://www.rtl.fr/actu/sciences-tech/enlevements-lies-aux-cryptomonnaies-les-mythes-d-argent-facile-qui-attirent-les-ravisseurs-7900505683\\n#nostrfr\",\"sig\":\"9badf62758cad7aeb0b69bf1814e1e05010dd067f76a23a9909e1722916e80b4293f9fc2e4adefa3a75688b780ac109392f39ea4761d5676a9ef75c813db64b9\"}"
@@ -84,7 +72,7 @@ private fun HomePage_Preview() {
             NostrEvent(
                 kind = NostrKindStandard.TEXT_NOTE,
                 tags = listOf("Tag01", "Tag02"),
-                authKey = "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",
+                npub  = bitcoinMetadata.npub,
                 authMeta = bitcoinMetadata,
                 createdAt = LocalDateTime.now(),
                 content = "This is more content of another Nostr event",
