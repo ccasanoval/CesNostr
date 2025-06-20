@@ -1,5 +1,6 @@
 package com.cesoft.cesnostr.home.view
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.cesoft.cesnostr.R
@@ -64,7 +67,7 @@ internal fun HomeEventList(
     ) {
         LazyColumn {
             if(events.isEmpty()) {
-                item { Spacer(Modifier.fillMaxWidth().height(SepMax*5)) }
+                item { Spacer(Modifier.fillMaxWidth().height(SepMax*5).border(2.dp, Color.Blue)) }
             }
             for (event in events) {
                 item {

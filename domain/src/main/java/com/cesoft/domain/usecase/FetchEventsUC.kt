@@ -11,7 +11,7 @@ open class FetchEventsUC @Inject constructor(
     suspend operator fun invoke(
         kind: NostrKindStandard? = null,
         authList: List<String> = listOf(),
-        limit: ULong = 10u
+        limit: ULong? = null
     ): Result<List<NostrEvent>> {
         return repository.fetchEvents(kind, authList, limit)
     }

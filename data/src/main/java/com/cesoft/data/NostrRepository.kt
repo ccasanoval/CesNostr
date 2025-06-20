@@ -10,6 +10,7 @@ import com.cesoft.domain.entity.NostrPrivateKey
 import com.cesoft.domain.entity.NostrPublicKey
 import com.cesoft.domain.repo.NostrRepositoryContract
 import rust.nostr.sdk.Client
+import rust.nostr.sdk.Contact
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventBuilder
 import rust.nostr.sdk.Events
@@ -19,6 +20,7 @@ import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.NostrSigner
 import rust.nostr.sdk.PublicKey
+import rust.nostr.sdk.SendEventOutput
 import java.time.Duration
 import javax.inject.Inject
 
@@ -100,10 +102,9 @@ class NostrRepository @Inject constructor(
     override suspend fun fetchEvents(
         kind: NostrKindStandard?,
         authList: List<String>,
-        limit: ULong
+        limit: ULong?
     ): Result<List<NostrEvent>> {
         try {
-            //val client = Client()
             var client = prefsRepository.readPrivateKey()?.let {
                 val keys = Keys.parse(it)
                 val signer = NostrSigner.keys(keys)
@@ -119,12 +120,13 @@ class NostrRepository @Inject constructor(
                 authListKeys.add(PublicKey.parse(auth))
             }
 
-            val filter = Filter()
-                .kind(Kind.fromStd(kind?.toDto()!!))
-                .authors(authListKeys)
-                .limit(limit)
+            var filter = Filter().kind(Kind.fromStd(kind.toDto()))
+            if(authListKeys.isNotEmpty()) filter = filter.authors(authListKeys)
+            if(limit != null) filter = filter.limit(limit)
             val events = client.fetchEvents(filter, Duration.ofSeconds(5L)).toVec()
 
+            //TODO: Enhance for the case the user doesn't give authors
+            //TODO: you must fetch the events, get all the different authors and then fetch their metadata..
             val filterMeta = Filter()
                 .kind(Kind.fromStd(KindStandard.METADATA))
                 .authors(authListKeys)
@@ -181,7 +183,8 @@ class NostrRepository @Inject constructor(
                 val signer = NostrSigner.keys(keys)
                 Client(signer = signer)
             } ?: run {
-                Client()
+                //Client()
+                return Result.failure(AppError.InvalidNostrKey)
             }
             addRelays(client)
             client.connect()
@@ -193,18 +196,52 @@ class NostrRepository @Inject constructor(
             //FOLLOW_SET : https://github.com/nostr-protocol/nips/blob/master/02.md
             //CONTACT_LIST : idem?
             val filter = Filter()
-                .kind(Kind.fromStd(KindStandard.CONTACT_LIST))//
-                //.limit(15u)//TODO: TEST
-            val events: Events = client.fetchEvents(filter, Duration.ofSeconds(2L))
+                .kind(Kind.fromStd(KindStandard.CONTACT_LIST))
+                .author(keys!!.publicKey())
+            var events: Events = client.fetchEvents(filter, Duration.ofSeconds(2L))
+            Log.e(TAG, "sendFollowList--------------- 0000")
             for (e in events.toVec()) {
-                android.util.Log.e(TAG, "sendFollowList--------------- ${e.asJson()}")
+                Log.e(TAG, "sendFollowList---------------json ${e.asJson()}")
+                Log.e(TAG, "sendFollowList---------------npub ${e.author().toBech32()}")
+                val tags = e.tags().toVec()
+                for(tag in tags) {
+                    Log.e(TAG, "sendFollowList---------------tag = ${tag.content()} / ${tag.kind()} / ${tag.kindStr()} / ${tag.asVec().first()}")
+                    tag.content()?.let { newFollowList.add(it) }
+                }
+
             }
 
-            val publicKeyList = newFollowList.map { PublicKey.parse(it) }
-            val eb = EventBuilder.followSet("yourCesNstrContactList", publicKeyList)
-            keys?.let { eb.signWithKeys(keys) }
-            client.sendEventBuilder(eb)
-            return Result.success(Unit)
+            //TODO: EventBuilder.bookmarks()
+            //EventBuilder.followSet(identifier: String, publicKeys: List<PubKey>)
+            val eb = EventBuilder.contactList(listOf(
+                Contact(
+                    publicKey = PublicKey.parse("npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k"),//CES
+                    relayUrl = null,
+                    alias = "CES"
+                ),
+                Contact(
+                    publicKey = PublicKey.parse("npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv"),//BTC
+                    relayUrl = null,
+                    alias = "BTC"
+                ),
+            ))
+            keys.let { eb.signWithKeys(keys) }
+            val out: SendEventOutput = client.sendEventBuilder(eb)
+            Log.e(TAG, "sendFollowList---------------out: ${out.success.size} / ${out.failed.size} / ${out.id}")
+            for(s in out.success)
+                Log.e(TAG, "sendFollowList---------------out S: $s ")
+            for(f in out.failed)
+                Log.e(TAG, "sendFollowList---------------out F: $f ")
+
+
+            events = client.fetchEvents(filter, Duration.ofSeconds(2L))
+            Log.e(TAG, "sendFollowList 2--------------- 0000")
+            for (e in events.toVec()) {
+                Log.e(TAG, "sendFollowList 2---------------json ${e.asJson()}")
+            }
+
+            return if(out.success.isNotEmpty()) Result.success(Unit)
+            else Result.failure(AppError.NotKnownError)
         }
         catch(e: Exception) {
             return Result.failure(e)

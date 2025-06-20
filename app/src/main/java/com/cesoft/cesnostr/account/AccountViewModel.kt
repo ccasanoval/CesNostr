@@ -1,7 +1,5 @@
 package com.cesoft.cesnostr.account
 
-import android.app.Activity
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -23,7 +21,6 @@ import com.cesoft.domain.usecase.GetKeysUC
 import com.cesoft.domain.usecase.ReadPrivateKeyUC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 

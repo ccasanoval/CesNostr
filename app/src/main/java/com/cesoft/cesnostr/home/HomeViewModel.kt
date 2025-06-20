@@ -27,7 +27,6 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getEvents: FetchEventsUC,
-    private val sendFollowList: SendFollowListUC,
 ): ViewModel(), MviHost<HomeIntent, State<HomeState, HomeSideEffect>> {
 
     private val reducer: Reducer<HomeIntent, State<HomeState, HomeSideEffect>> = Reducer(
@@ -63,26 +62,6 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun fetch(): HomeTransform.GoInit {
-/*
-        //TODO: TESTING
-        val r1: Result<Unit> = sendFollowList(
-            listOf("npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv")
-        )
-        if(r1.isSuccess) {
-            android.util.Log.e(TAG, "fetch------- CONTACT_LIST OK -----------")
-        }
-
-        val r: Result<List<NostrEvent>> = getEvents(NostrKindStandard.CONTACT_LIST)
-        if(r.isSuccess) {
-            val es = r.getOrNull() ?: listOf()
-            android.util.Log.e(TAG, "fetch------- CONTACT_LIST -----------")
-            for(ev in es) {
-                android.util.Log.e(TAG, "fetch------- CONTACT_LIST: $ev")
-            }
-        }
-        //TODO: TESTING
-        */
-
         //TODO: List of authors to follow...
         val authList = listOf(
             "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",//CES
@@ -90,7 +69,8 @@ class HomeViewModel @Inject constructor(
         )
         val res: Result<List<NostrEvent>> = getEvents(
             kind = NostrKindStandard.TEXT_NOTE,
-            authList = authList
+            authList = authList,
+            limit = 10u //TODO:?
         )
         return if(res.isSuccess) {
             val events = res.getOrNull()

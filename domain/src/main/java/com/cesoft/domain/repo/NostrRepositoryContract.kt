@@ -14,6 +14,6 @@ interface NostrRepositoryContract {
     suspend fun fetchEvents(
         kind: NostrKindStandard?,
         authList: List<String>,
-        limit: ULong
+        limit: ULong?
     ): Result<List<NostrEvent>>
 }
