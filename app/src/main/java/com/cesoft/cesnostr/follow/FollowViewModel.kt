@@ -23,6 +23,7 @@ import com.cesoft.domain.entity.NostrKeys
 import com.cesoft.domain.entity.NostrKindStandard
 import com.cesoft.domain.entity.NostrMetadata
 import com.cesoft.domain.usecase.FetchEventsUC
+import com.cesoft.domain.usecase.FetchFollowListUC
 import com.cesoft.domain.usecase.GetKeysUC
 import com.cesoft.domain.usecase.ReadPrivateKeyUC
 import com.cesoft.domain.usecase.SendFollowListUC
@@ -34,6 +35,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FollowViewModel @Inject constructor(
     private val fetchEvents: FetchEventsUC,
+    private val fetchFollowList: FetchFollowListUC,
     private val sendFollowList: SendFollowListUC,
     private val getKeys: GetKeysUC,
     private val readPrivateKey: ReadPrivateKeyUC,//TODO: Mix this two
@@ -72,57 +74,10 @@ class FollowViewModel @Inject constructor(
 
     private suspend fun fetch(): FollowTransform.GoInit {
         android.util.Log.e(TAG, "fetch------- ----------- 0000")
-        //TODO: TESTING
-        //TODO: Change nput_String by NostrContact
-        val r1: Result<Unit> = sendFollowList(listOf(
-            "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",
-            "npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv"
-//            Contact(
-//                publicKey = PublicKey.parse("npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k"),//CES
-//                relayUrl = null,
-//                alias = "CES"
-//            ),
-//            Contact(
-//                publicKey = PublicKey.parse("npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv"),//BTC
-//                relayUrl = null,
-//                alias = "BTC"
-//            ),
-//            ))
-        ))
-        if(r1.isSuccess) {
-            android.util.Log.e(TAG, "fetch------- CONTACT_LIST OK -----------")
-        }
 
-        val nsec: String? = readPrivateKey()
-        val npub = nsec?.let {
-            val res2: Result<NostrKeys> = getKeys(nsec)
-            val keys = res2.getOrNull()
-            keys?.publicKey?.npub
-        }
-
-        val res1 = if(npub != null)
-            fetchEvents(kind = NostrKindStandard.CONTACT_LIST, authList = listOf(npub))
-        else
-            fetchEvents(kind = NostrKindStandard.CONTACT_LIST)
-
-        if(res1.isSuccess) {
-            val list = res1.getOrNull()?.map { e: NostrEvent -> e.toMetadata(e.npub) }
-            if (list != null && list.isNotEmpty()) {
-                android.util.Log.e(TAG, "fetch------- CONTACT_LIST OK : ${list.size} -----------")
-            }
-        }
-
-        val res: Result<List<NostrEvent>> = fetchEvents(NostrKindStandard.CONTACT_LIST) //FOLLOW_SET) //CONTACT_LIST)
+        val res: Result<List<NostrMetadata>> = fetchFollowList()
         return if(res.isSuccess) {
-            val list = res.getOrNull()?.map { e: NostrEvent -> e.toMetadata(e.npub) }
-            if(list != null && list.isNotEmpty()) {
-                android.util.Log.e(TAG, "fetch------- CONTACT_LIST OK : ${list.size} -----------")
-                FollowTransform.GoInit(list = list)
-            }
-            else {
-                android.util.Log.e(TAG, "fetch------- $list ----------- 0000")
-                FollowTransform.GoInit()
-            }
+            FollowTransform.GoInit(list = res.getOrNull() ?: listOf())
         }
         else {
             val error = res.exceptionOrNull() ?: NotKnownError

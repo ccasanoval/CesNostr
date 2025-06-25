@@ -37,6 +37,9 @@ fun FollowPage(
     navController: NavController,
     viewModel: FollowViewModel,
 ) {
+    LaunchedEffect(true) {
+        android.util.Log.e("FollowPage", "------------- ${viewModel.state.value}")
+    }
     val context = LocalContext.current
     MviScreen(
         state = viewModel.state,

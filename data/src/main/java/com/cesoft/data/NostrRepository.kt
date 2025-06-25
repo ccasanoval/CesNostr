@@ -15,14 +15,17 @@ import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventBuilder
 import rust.nostr.sdk.Events
 import rust.nostr.sdk.Filter
+import rust.nostr.sdk.JsonValue
 import rust.nostr.sdk.Keys
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.NostrSigner
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.SendEventOutput
+import rust.nostr.sdk.TagKind
 import java.time.Duration
 import javax.inject.Inject
+import kotlin.collections.map
 
 class NostrRepository @Inject constructor(
     val prefsRepository: PrefsRepository
@@ -174,6 +177,52 @@ class NostrRepository @Inject constructor(
         }
     }
 
+    override suspend fun fetchFollowList(): Result<List<NostrMetadata>> {
+        try {
+            var keys: Keys? = null
+            var client = prefsRepository.readPrivateKey()?.let {
+                keys = Keys.parse(it)
+                val signer = NostrSigner.keys(keys)
+                Client(signer = signer)
+            } ?: run {
+                //Client()
+                return Result.failure(AppError.InvalidNostrKey)
+            }
+            addRelays(client)
+            client.connect()
+
+            /// Get follow author tags, and get the npub inside
+            val npubs = mutableListOf<String>()
+            val filter = Filter()
+                .kind(Kind.fromStd(KindStandard.CONTACT_LIST))
+                .author(keys!!.publicKey())
+            var events: Events = client.fetchEvents(filter, Duration.ofSeconds(2L))
+            for (e in events.toVec()) {
+                Log.e(TAG, "fetchFollowList---------------npub ${e.author().toBech32()}")
+                val tags = e.tags().toVec()
+                for (tag in tags) {
+                    if (tag.kind() == TagKind.SingleLetter && tag.kindStr() == "p")
+                        Log.e(TAG, "fetchFollowList---------------tag = OK")
+                    Log.e(TAG, "fetchFollowList--------tag = ${tag.content()} / ${tag.kind()} / ${tag.kindStr()}")
+                    tag.content()?.let { npubs.add(it) }
+                    //val meta = client.fetchMetadata(publicKey, Duration.ofSeconds(5L))?.toEntity(npub)//More calls... better all at once
+                }
+            }
+
+            /// Now get the metadata from those npubs
+            val filterMeta = Filter()
+                .kind(Kind.fromStd(KindStandard.METADATA))
+                .authors(npubs.map { PublicKey.parse(it) })
+            val metas: List<Event> = client.fetchEvents(filterMeta, Duration.ofSeconds(5L)).toVec()
+            val auths: List<NostrMetadata> = metas.map { it.toMetadata(it.author().toBech32()) }
+
+            return Result.success(auths)
+        }
+        catch(e: Exception) {
+            return Result.failure(e)
+        }
+    }
+
     //https://github.com/nostr-protocol/nips/blob/master/02.md
     override suspend fun sendFollowList(followList: List<String>): Result<Unit> {
         try {
@@ -205,26 +254,25 @@ class NostrRepository @Inject constructor(
                 Log.e(TAG, "sendFollowList---------------npub ${e.author().toBech32()}")
                 val tags = e.tags().toVec()
                 for(tag in tags) {
+                    if(tag.kind() == TagKind.SingleLetter && tag.kindStr() == "p")
+                        Log.e(TAG, "sendFollowList---------------tag = OK")
                     Log.e(TAG, "sendFollowList---------------tag = ${tag.content()} / ${tag.kind()} / ${tag.kindStr()} / ${tag.asVec().first()}")
                     tag.content()?.let { newFollowList.add(it) }
                 }
-
             }
 
-            //TODO: EventBuilder.bookmarks()
-            //EventBuilder.followSet(identifier: String, publicKeys: List<PubKey>)
-            val eb = EventBuilder.contactList(listOf(
-                Contact(
-                    publicKey = PublicKey.parse("npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k"),//CES
-                    relayUrl = null,
-                    alias = "CES"
-                ),
-                Contact(
-                    publicKey = PublicKey.parse("npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv"),//BTC
-                    relayUrl = null,
-                    alias = "BTC"
-                ),
-            ))
+            val newContacts = mutableListOf<Contact>()
+            for(npub in newFollowList) {
+                newContacts.add(
+                    Contact(
+                        publicKey = PublicKey.parse(npub),
+                        relayUrl = null,
+                        alias = null
+                    )
+                )
+            }
+
+            val eb = EventBuilder.contactList(newContacts)
             keys.let { eb.signWithKeys(keys) }
             val out: SendEventOutput = client.sendEventBuilder(eb)
             Log.e(TAG, "sendFollowList---------------out: ${out.success.size} / ${out.failed.size} / ${out.id}")
@@ -234,10 +282,15 @@ class NostrRepository @Inject constructor(
                 Log.e(TAG, "sendFollowList---------------out F: $f ")
 
 
+            /// TODO: Check that the new ones have been added ? or is it a waste?
             events = client.fetchEvents(filter, Duration.ofSeconds(2L))
             Log.e(TAG, "sendFollowList 2--------------- 0000")
             for (e in events.toVec()) {
-                Log.e(TAG, "sendFollowList 2---------------json ${e.asJson()}")
+                val tags = e.tags().toVec()
+                for(tag in tags) {
+                    Log.e(TAG, "sendFollowList--2---tag = ${tag.content()} / ${tag.kind()} / ${tag.kindStr()}")
+                    //TODO: Check that the new ones appears
+                }
             }
 
             return if(out.success.isNotEmpty()) Result.success(Unit)
