@@ -2,7 +2,6 @@ package com.cesoft.cesnostr.home.view
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,13 +38,14 @@ import com.cesoft.cesnostr.R
 import com.cesoft.cesnostr.common.LinkifyText
 import com.cesoft.cesnostr.home.vmi.HomeIntent
 import com.cesoft.cesnostr.home.vmi.HomeState
-import com.cesoft.cesnostr.ui.theme.FontSizeBig
 import com.cesoft.cesnostr.ui.theme.FontSizeMed
 import com.cesoft.cesnostr.ui.theme.SepMax
 import com.cesoft.cesnostr.ui.theme.SepMin
 import com.cesoft.domain.entity.NostrEvent
 import com.cesoft.domain.entity.NostrKindStandard
 import com.cesoft.domain.entity.NostrMetadata
+import com.cesoft.domain.entity.bitcoinMetadata
+import com.cesoft.domain.entity.opusMetadata
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)

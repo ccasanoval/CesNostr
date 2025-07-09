@@ -9,18 +9,13 @@ import com.adidas.mvi.MviHost
 import com.adidas.mvi.Reducer
 import com.adidas.mvi.State
 import com.adidas.mvi.reducer.Reducer
-import com.cesoft.cesnostr.account.vmi.AccountTransform
+import com.cesoft.cesnostr.follow.view.FollowListItem
 import com.cesoft.cesnostr.follow.vmi.FollowIntent
 import com.cesoft.cesnostr.follow.vmi.FollowSideEffect
 import com.cesoft.cesnostr.follow.vmi.FollowState
 import com.cesoft.cesnostr.follow.vmi.FollowTransform
 import com.cesoft.cesnostr.view.Page
-import com.cesoft.data.toMetadata
-import com.cesoft.domain.AppError
 import com.cesoft.domain.AppError.NotKnownError
-import com.cesoft.domain.entity.NostrEvent
-import com.cesoft.domain.entity.NostrKeys
-import com.cesoft.domain.entity.NostrKindStandard
 import com.cesoft.domain.entity.NostrMetadata
 import com.cesoft.domain.usecase.FetchEventsUC
 import com.cesoft.domain.usecase.FetchFollowListUC
@@ -56,18 +51,18 @@ class FollowViewModel @Inject constructor(
             FollowIntent.Close -> executeClose()
             FollowIntent.Load -> executeLoad()
             FollowIntent.Reload -> executeReload()
-            //is FollowIntent.Author -> executeAuthor(intent.npub)
+            is FollowIntent.GoAuthor -> executeGoAuthor(intent.npub)
         }
 
+    private fun executeGoAuthor(npub: String) = flow {
+        emit(FollowTransform.AddSideEffect(FollowSideEffect.GoAuthor(npub)))
+    }
     private fun executeClose() = flow {
         emit(FollowTransform.AddSideEffect(FollowSideEffect.Close))
     }
     private fun executeReload() = flow {
         emit(FollowTransform.GoReload)
     }
-//    private fun executeAuthor(npub: String) = flow {
-//        emit(FollowTransform.AddSideEffect(FollowSideEffect.Author(npub)))
-//    }
     private fun executeLoad() = flow {
         emit(fetch())
     }
@@ -77,6 +72,10 @@ class FollowViewModel @Inject constructor(
 
         val res: Result<List<NostrMetadata>> = fetchFollowList()
         return if(res.isSuccess) {
+            val list: List<NostrMetadata> = res.getOrNull() ?: listOf()
+            for(m in list) {
+                android.util.Log.e(TAG, "fetch:--------- $m")
+            }
             FollowTransform.GoInit(list = res.getOrNull() ?: listOf())
         }
         else {
@@ -98,13 +97,13 @@ class FollowViewModel @Inject constructor(
             FollowSideEffect.Close -> {
                 (context as Activity).finish()
             }
-//            is FollowSideEffect.Author -> {
-//                navController.navigate(Page.Author.createRoute(sideEffect.npub))
-//            }
+            is FollowSideEffect.GoAuthor -> {
+                navController.navigate(Page.Author.createRoute(sideEffect.npub))
+            }
         }
     }
 
     companion object {
-        private const val TAG = "HomeVM"
+        private const val TAG = "FollowVM"
     }
 }

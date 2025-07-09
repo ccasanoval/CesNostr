@@ -198,24 +198,18 @@ class NostrRepository @Inject constructor(
                 .author(keys!!.publicKey())
             var events: Events = client.fetchEvents(filter, Duration.ofSeconds(2L))
             for (e in events.toVec()) {
-                Log.e(TAG, "fetchFollowList---------------npub ${e.author().toBech32()}")
                 val tags = e.tags().toVec()
                 for (tag in tags) {
-                    if (tag.kind() == TagKind.SingleLetter && tag.kindStr() == "p")
-                        Log.e(TAG, "fetchFollowList---------------tag = OK")
-                    Log.e(TAG, "fetchFollowList--------tag = ${tag.content()} / ${tag.kind()} / ${tag.kindStr()}")
                     tag.content()?.let { npubs.add(it) }
                     //val meta = client.fetchMetadata(publicKey, Duration.ofSeconds(5L))?.toEntity(npub)//More calls... better all at once
                 }
             }
-
             /// Now get the metadata from those npubs
             val filterMeta = Filter()
                 .kind(Kind.fromStd(KindStandard.METADATA))
                 .authors(npubs.map { PublicKey.parse(it) })
             val metas: List<Event> = client.fetchEvents(filterMeta, Duration.ofSeconds(5L)).toVec()
-            val auths: List<NostrMetadata> = metas.map { it.toMetadata(it.author().toBech32()) }
-
+            val auths: List<NostrMetadata> = metas.map { it.toMetadata(it.author().toBech32()) }.distinctBy { it.npub }
             return Result.success(auths)
         }
         catch(e: Exception) {

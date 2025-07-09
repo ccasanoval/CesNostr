@@ -105,7 +105,7 @@ private fun FollowInit(
         ) {
             for (author in state.list) {
                 item {
-                    Text("${author.name} : ${author.displayName}")
+                    FollowListItem(author, reduce)
                 }
             }
         }
