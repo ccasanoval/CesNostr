@@ -24,11 +24,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.adidas.mvi.compose.MviScreen
 import com.cesoft.cesnostr.R
+import com.cesoft.cesnostr.common.EventListItem
 import com.cesoft.cesnostr.common.LoadingCompo
 import com.cesoft.cesnostr.home.view.testEvents
 import com.cesoft.cesnostr.search.SearchViewModel
@@ -58,7 +60,6 @@ fun SearchPage(
     ) { state: SearchState ->
         when(state) {
             is SearchState.Loading -> {
-                viewModel.execute(SearchIntent.Load)
                 LoadingCompo()
             }
             is SearchState.Init -> {
@@ -73,7 +74,9 @@ fun SearchPage(
 
 @Composable
 private fun SearchInit(state: SearchState, reduce: (SearchIntent) -> Unit) {
-    val searchText = remember { mutableStateOf("") }
+    val searchText = remember { mutableStateOf(
+        if(state is SearchState.Result) state.searchText else ""
+    ) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.alpha(0.75f)
@@ -108,8 +111,9 @@ fun SearchResultList(state: SearchState.Result, reduce: (SearchIntent) -> Unit) 
         item { Spacer(Modifier.size(175.dp)) }
         for(event in state.events) {
             item {
-                Text(event.content)
-                HorizontalDivider()
+                Column {
+                    EventListItem(event) {  }
+                }
             }
         }
     }

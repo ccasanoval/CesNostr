@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.cesoft.cesnostr.R
+import com.cesoft.cesnostr.common.EventListItem
 import com.cesoft.cesnostr.common.LinkifyText
 import com.cesoft.cesnostr.home.mvi.HomeIntent
 import com.cesoft.cesnostr.home.mvi.HomeState
@@ -70,64 +72,7 @@ internal fun HomeEventList(
                 item { Spacer(Modifier.fillMaxWidth().height(SepMax*5).border(2.dp, Color.Blue)) }
             }
             for (event in events) {
-                item {
-                    Column {
-                        HorizontalDivider(
-                            modifier = Modifier.height(SeparatorHeight),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-
-                        // Author metadata
-                        AuthorMetadata(event) {
-                            reduce(HomeIntent.Author(event.npub))
-                        }
-
-                        // Time and type
-                        Text(event.createdAt.toString())
-                        Text("${event.kind}")
-
-                        // Content
-                        HorizontalDivider()
-                        LinkifyText(
-                            text = event.content,
-                            style = TextStyle.Default.copy(
-                                lineBreak = LineBreak.Paragraph,
-                                hyphens = Hyphens.Auto
-                            )
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun AuthorMetadata(event: NostrEvent, onClick: () -> Unit) {
-    var meta: NostrMetadata? = event.authMeta
-    meta?.let {
-        Row(modifier = Modifier.padding(SepMin).clickable { onClick() }) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(it.picture)
-                    .crossfade(true)
-                    .build(),
-                placeholder = painterResource(android.R.drawable.ic_menu_report_image),
-                contentDescription = stringResource(R.string.app_name),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(AuthorIconSize),
-                //colorFilter = ColorFilter.tint(Color.Unspecified)
-            )
-            Column(modifier = Modifier.padding(start = SepMin)) {
-                Text(
-                    text = it.displayName,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = FontSizeMed,
-                )
-                Text(
-                    text = it.lud16,
-                    color = MaterialTheme.colorScheme.secondary
-                )
+                item { EventListItem(event) { reduce(HomeIntent.Author(event.npub)) } }
             }
         }
     }

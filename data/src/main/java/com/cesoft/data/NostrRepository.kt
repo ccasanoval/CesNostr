@@ -15,7 +15,6 @@ import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventBuilder
 import rust.nostr.sdk.Events
 import rust.nostr.sdk.Filter
-import rust.nostr.sdk.JsonValue
 import rust.nostr.sdk.Keys
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
@@ -25,7 +24,6 @@ import rust.nostr.sdk.SendEventOutput
 import rust.nostr.sdk.TagKind
 import java.time.Duration
 import javax.inject.Inject
-import kotlin.collections.map
 
 class NostrRepository @Inject constructor(
     val prefsRepository: PrefsRepository
@@ -129,7 +127,7 @@ class NostrRepository @Inject constructor(
             val events = client.fetchEvents(filter, Duration.ofSeconds(5L)).toVec()
 
             //TODO: Enhance for the case the user doesn't give authors
-            //TODO: you must fetch the events, get all the different authors and then fetch their metadata..
+            //TODO: you must fetch the eevents, gt all the different authors and then fetch their metadata..
             val filterMeta = Filter()
                 .kind(Kind.fromStd(KindStandard.METADATA))
                 .authors(authListKeys)
@@ -312,6 +310,7 @@ class NostrRepository @Inject constructor(
             addRelays(client)
             client.connect()
 
+            /// Search for events with the searched text
             val filter = Filter()
                 .kinds(listOf(
                     Kind.fromStd(KindStandard.METADATA),
@@ -323,13 +322,19 @@ class NostrRepository @Inject constructor(
                 ))
                 .search(searchText)
                 //.author(keys!!.publicKey())
-            var events: Events = client.fetchEvents(filter, Duration.ofSeconds(2L))
+            var events: List<Event> = client.fetchEvents(filter, Duration.ofSeconds(2L)).toVec()
 
+            /// Search authors of the search result events
+            val authorsPK = events.map { it.author() }
+            val filterMeta = Filter()
+                .kind(Kind.fromStd(KindStandard.METADATA))
+                .authors(authorsPK)
+            val metas: List<Event> = client.fetchEvents(filterMeta, Duration.ofSeconds(5L)).toVec()
+            val auths: List<NostrMetadata> = metas.map { it.toMetadata(it.author().toBech32()) }
 //            for(e in events.toVec()) {
 //                android.util.Log.e(TAG, "searchAuthors------- $e")
 //            }
-
-            return Result.success(events.toVec().map { it.toEntity(NostrMetadata.Empty) })
+            return Result.success(events.map { it.toEntity(auths) })
         }
         catch (e: Exception) {
             Log.e(TAG, "searchAuthors:e:----------- $e")

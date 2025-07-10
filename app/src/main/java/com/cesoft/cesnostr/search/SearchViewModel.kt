@@ -16,8 +16,7 @@ import com.cesoft.cesnostr.search.mvi.SearchTransform
 import com.cesoft.cesnostr.view.Page
 import com.cesoft.domain.AppError
 import com.cesoft.domain.entity.NostrEvent
-import com.cesoft.domain.usecase.FetchEventsUC
-import com.cesoft.domain.usecase.SearchAuthorsUC
+import com.cesoft.domain.usecase.SearchEventsUC
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
@@ -25,8 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val getEvents: FetchEventsUC,
-    private val searchAuthors: SearchAuthorsUC,
+    private val searchAuthors: SearchEventsUC,
 ): ViewModel(), MviHost<SearchIntent, State<SearchState, SearchSideEffect>> {
 
     private val reducer: Reducer<SearchIntent, State<SearchState, SearchSideEffect>> = Reducer(
@@ -44,22 +42,15 @@ class SearchViewModel @Inject constructor(
     private fun executeIntent(intent: SearchIntent) =
         when (intent) {
             SearchIntent.Close -> executeClose()
-            SearchIntent.Load -> executeLoad()
             is SearchIntent.Search -> { executeSearch(intent.searchText) }
         }
 
     private fun executeClose() = flow {
         emit(SearchTransform.AddSideEffect(SearchSideEffect.Close))
     }
-    private fun executeLoad() = flow {
-        emit(fetch())
-    }
     private fun executeSearch(searchText: String) = flow {
+        emit(SearchTransform.GoLoading)
         emit(search(searchText))
-    }
-
-    private suspend fun fetch(): SearchTransform.GoReload {
-        return SearchTransform.GoReload
     }
 
     private suspend fun search(searchText: String): SearchTransform.GoResult {
@@ -68,21 +59,24 @@ class SearchViewModel @Inject constructor(
         if(res.isSuccess) {
             val events = res.getOrNull() ?: listOf()
             for(a in events) {
-                android.util.Log.e(TAG, "search:authors:------------------------- $a")
+                android.util.Log.e(TAG, "search:authors:------------------------- ${a.authMeta.displayName}, ${a.authMeta.name}, ${a.authMeta.npub}")
+                android.util.Log.e(TAG, "search:authors:------------------------- ${a.npub}, ${a.content}")
+                android.util.Log.e(TAG, "search:authors:------------------------- *************************************+")
             }
-            //val events = resEvents.getOrNull() ?: listOf()
             return SearchTransform.GoResult(
-                //authors = authors,
+                searchText = searchText,
                 events = events,
                 error = null
             )
         }
         else {
-            val failure = res.exceptionOrNull()
-                //?: resEvents.exceptionOrNull()
-                ?: AppError.NotKnownError
+            val failure = res.exceptionOrNull() ?: AppError.NotKnownError
             android.util.Log.e(TAG, "search:e:------------------------- $failure")
-            return SearchTransform.GoResult(error = failure)
+            return SearchTransform.GoResult(
+                searchText = searchText,
+                events = listOf(),
+                error = failure
+            )
         }
     }
 

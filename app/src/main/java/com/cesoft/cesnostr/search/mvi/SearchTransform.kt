@@ -4,24 +4,24 @@ import com.adidas.mvi.sideeffects.SideEffects
 import com.adidas.mvi.transform.SideEffectTransform
 import com.adidas.mvi.transform.ViewTransform
 import com.cesoft.domain.entity.NostrEvent
-import com.cesoft.domain.entity.NostrMetadata
+import hilt_aggregated_deps._com_cesoft_cesnostr_search_SearchViewModel_HiltModules_KeyModule
 
 internal object SearchTransform {
 
-    data object GoReload : ViewTransform<SearchState, SearchSideEffect>() {
+    data object GoLoading : ViewTransform<SearchState, SearchSideEffect>() {
         override fun mutate(currentState: SearchState): SearchState {
             return SearchState.Loading
         }
     }
 
     data class GoResult(
-        //val authors: List<NostrMetadata> = listOf(),
+        val searchText: String,
         val events: List<NostrEvent> = listOf(),
         val error: Throwable? = null,
     ) : ViewTransform<SearchState, SearchSideEffect>() {
         override fun mutate(currentState: SearchState): SearchState {
             return SearchState.Result(
-                //authors = authors,
+                searchText = searchText,
                 events = events,
                 error = error
             )

@@ -14,8 +14,45 @@ import java.time.ZoneOffset
 
 /// KindStandard
 internal fun KindStandard?.toEntity(): NostrKindStandard = when(this) {
-    KindStandard.TEXT_NOTE -> NostrKindStandard.TEXT_NOTE
+    KindStandard.AUTHENTICATION -> NostrKindStandard.AUTHENTICATION
+    KindStandard.APPLICATION_SPECIFIC_DATA -> NostrKindStandard.APPLICATION_SPECIFIC_DATA
+    KindStandard.BADGE_DEFINITION -> NostrKindStandard.BADGE_DEFINITION
+    KindStandard.BADGE_AWARD -> NostrKindStandard.BADGE_AWARD
+    KindStandard.BOOKMARKS -> NostrKindStandard.BOOKMARKS
+    KindStandard.BOOKMARK_SET -> NostrKindStandard.BOOKMARK_SET
+    KindStandard.CHANNEL_MESSAGE -> NostrKindStandard.CHANNEL_MESSAGE
+    KindStandard.CHANNEL_METADATA -> NostrKindStandard.CHANNEL_METADATA
+    KindStandard.EMOJIS -> NostrKindStandard.EMOJIS
+    KindStandard.FILE_METADATA -> NostrKindStandard.FILE_METADATA
+    KindStandard.FOLLOW_SET -> NostrKindStandard.FOLLOW_SET
+    KindStandard.GENERIC_REPOST -> NostrKindStandard.GENERIC_REPOST
+    KindStandard.GIFT_WRAP -> NostrKindStandard.GIFT_WRAP
+    KindStandard.GIT_ISSUE -> NostrKindStandard.GIT_ISSUE
+    KindStandard.HTTP_AUTH -> NostrKindStandard.HTTP_AUTH
+    KindStandard.INTERESTS -> NostrKindStandard.INTERESTS
+    KindStandard.JOB_FEEDBACK -> NostrKindStandard.JOB_FEEDBACK
+    KindStandard.LABEL -> NostrKindStandard.LABEL
+    KindStandard.LONG_FORM_TEXT_NOTE -> NostrKindStandard.LONG_FORM_TEXT_NOTE
+    KindStandard.METADATA -> NostrKindStandard.METADATA
+    KindStandard.MUTE_LIST -> NostrKindStandard.MUTE_LIST
+    KindStandard.NOSTR_CONNECT -> NostrKindStandard.NOSTR_CONNECT
+    KindStandard.OPEN_TIMESTAMPS -> NostrKindStandard.OPEN_TIMESTAMPS
+    KindStandard.REACTION -> NostrKindStandard.REACTION
     KindStandard.REPOST -> NostrKindStandard.REPOST
+    KindStandard.REPORTING -> NostrKindStandard.REPORTING
+    KindStandard.SEAL -> NostrKindStandard.SEAL
+    KindStandard.SEARCH_RELAYS -> NostrKindStandard.SEARCH_RELAYS
+    KindStandard.TEXT_NOTE -> NostrKindStandard.TEXT_NOTE
+    KindStandard.TORRENT_COMMENT -> NostrKindStandard.TORRENT_COMMENT
+    KindStandard.TORRENT -> NostrKindStandard.TORRENT
+    KindStandard.USER_STATUS -> NostrKindStandard.USER_STATUS
+    KindStandard.VIDEOS_CURATION_SET -> NostrKindStandard.VIDEOS_CURATION_SET
+    KindStandard.WALLET_CONNECT_INFO -> NostrKindStandard.WALLET_CONNECT_INFO
+    KindStandard.WALLET_CONNECT_REQUEST -> NostrKindStandard.WALLET_CONNECT_REQUEST
+    KindStandard.WALLET_CONNECT_RESPONSE -> NostrKindStandard.WALLET_CONNECT_RESPONSE
+    KindStandard.ZAP_PRIVATE_MESSAGE -> NostrKindStandard.ZAP_PRIVATE_MESSAGE
+    KindStandard.ZAP_RECEIPT -> NostrKindStandard.ZAP_RECEIPT
+    KindStandard.ZAP_REQUEST -> NostrKindStandard.ZAP_REQUEST
     else -> NostrKindStandard.UNKNOWN
 }
 fun NostrKindStandard?.toDto(): KindStandard = when(this) {
