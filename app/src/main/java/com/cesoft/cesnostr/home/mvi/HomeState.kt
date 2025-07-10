@@ -1,4 +1,4 @@
-package com.cesoft.cesnostr.home.vmi
+package com.cesoft.cesnostr.home.mvi
 
 import com.adidas.mvi.LoggableState
 import com.cesoft.domain.entity.NostrEvent

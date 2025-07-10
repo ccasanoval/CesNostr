@@ -1,4 +1,4 @@
-package com.cesoft.cesnostr.home.vmi
+package com.cesoft.cesnostr.home.mvi
 
 sealed class HomeSideEffect {
     data object Start: HomeSideEffect()

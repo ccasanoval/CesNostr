@@ -19,8 +19,8 @@ import com.cesoft.cesnostr.R
 import com.cesoft.cesnostr.common.ErrorHeader
 import com.cesoft.cesnostr.common.LoadingCompo
 import com.cesoft.cesnostr.common.toHumanMessage
-import com.cesoft.cesnostr.home.vmi.HomeIntent
-import com.cesoft.cesnostr.home.vmi.HomeState
+import com.cesoft.cesnostr.home.mvi.HomeIntent
+import com.cesoft.cesnostr.home.mvi.HomeState
 import com.cesoft.cesnostr.ui.theme.FontSizeBig
 import com.cesoft.cesnostr.ui.theme.SepMax
 

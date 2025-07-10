@@ -19,6 +19,8 @@ import com.cesoft.cesnostr.home.view.HomePage
 import com.cesoft.cesnostr.home.HomeViewModel
 import com.cesoft.cesnostr.login.LoginViewModel
 import com.cesoft.cesnostr.login.view.LoginPage
+import com.cesoft.cesnostr.search.SearchViewModel
+import com.cesoft.cesnostr.search.view.SearchPage
 import com.cesoft.data.pref.getPrivateKey
 
 sealed class Page(val route: String) {
@@ -26,6 +28,7 @@ sealed class Page(val route: String) {
     data object Login: Page("login")
     data object Account: Page("account")
     data object Follow: Page("follow")
+    data object Search: Page("search")
     //data class Author(): Page("author")
     data object Author: Page("author/{npub}") {
         private const val ARG_NPUB = "npub"
@@ -56,6 +59,9 @@ fun PageNavigation() {
             }
             composable(route = Page.Follow.route) {
                 FollowPage(navController, hiltViewModel<FollowViewModel>())
+            }
+            composable(route = Page.Search.route) {
+                SearchPage(navController, hiltViewModel<SearchViewModel>())
             }
         }
     }

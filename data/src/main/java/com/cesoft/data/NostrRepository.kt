@@ -77,7 +77,7 @@ class NostrRepository @Inject constructor(
             return Result.success(nostrKeys)
         }
         catch (e: Exception) {
-            Log.e(TAG, "getKeys------------ $e")
+            Log.e(TAG, "getKeys:e:------------ $e")
             return Result.failure(e)
         }
     }
@@ -97,7 +97,7 @@ class NostrRepository @Inject constructor(
             return Result.success(NostrKeys(publicKey, privateKey))
         }
         catch (e: Exception) {
-            Log.e(TAG, "createUser------------ $e")
+            Log.e(TAG, "createUser:e:------------ $e")
             return Result.failure(e)
         }
     }
@@ -173,6 +173,7 @@ class NostrRepository @Inject constructor(
             return Result.success(Unit)
         }
         catch(e: Exception) {
+            Log.e(TAG, "sendEvent:e:----------- $e")
             return Result.failure(e)
         }
     }
@@ -213,6 +214,7 @@ class NostrRepository @Inject constructor(
             return Result.success(auths)
         }
         catch(e: Exception) {
+            Log.e(TAG, "fetchFollowList:e:----------- $e")
             return Result.failure(e)
         }
     }
@@ -291,6 +293,46 @@ class NostrRepository @Inject constructor(
             else Result.failure(AppError.NotKnownError)
         }
         catch(e: Exception) {
+            Log.e(TAG, "sendFollowList:e:----------- $e")
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun searchAuthors(searchText: String): Result<List<NostrEvent>> {
+        try {
+            var keys: Keys? = null
+            var client = prefsRepository.readPrivateKey()?.let {
+                keys = Keys.parse(it)
+                val signer = NostrSigner.keys(keys)
+                Client(signer = signer)
+            } ?: run {
+                //Client()
+                return Result.failure(AppError.InvalidNostrKey)
+            }
+            addRelays(client)
+            client.connect()
+
+            val filter = Filter()
+                .kinds(listOf(
+                    Kind.fromStd(KindStandard.METADATA),
+                    Kind.fromStd(KindStandard.TEXT_NOTE),
+                    Kind.fromStd(KindStandard.LONG_FORM_TEXT_NOTE),
+                    Kind.fromStd(KindStandard.COMMENT),
+                    Kind.fromStd(KindStandard.CHANNEL_MESSAGE),
+                    Kind.fromStd(KindStandard.REPOST),
+                ))
+                .search(searchText)
+                //.author(keys!!.publicKey())
+            var events: Events = client.fetchEvents(filter, Duration.ofSeconds(2L))
+
+//            for(e in events.toVec()) {
+//                android.util.Log.e(TAG, "searchAuthors------- $e")
+//            }
+
+            return Result.success(events.toVec().map { it.toEntity(NostrMetadata.Empty) })
+        }
+        catch (e: Exception) {
+            Log.e(TAG, "searchAuthors:e:----------- $e")
             return Result.failure(e)
         }
     }

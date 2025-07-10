@@ -92,7 +92,10 @@ fun MainDrawerMenu(
                         label = { Text(stringResource(R.string.menu_search)) },
                         selected = false,
                         icon = { Icon(Icons.Outlined.Search, contentDescription = null) },
-                        onClick = { /* Handle click */ },
+                        onClick = {
+                            navController.navigate(Page.Search.route)
+                            scope.launch { drawerState.close() }
+                        },
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = SepMed))
 

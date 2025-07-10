@@ -10,6 +10,7 @@
 
     <!-- Actions -->
     <string name="close">Cerrar</string>
+    <string name="search">Buscar</string>
     <string name="start_as_guest_title">Comenzar como invitado</string>
     <string name="start_as_guest">Entrar</string>
     <string name="sign_in_nostr_title">Usar cuenta Nostr existente</string>

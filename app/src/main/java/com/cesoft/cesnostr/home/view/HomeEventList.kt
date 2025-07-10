@@ -36,8 +36,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.cesoft.cesnostr.R
 import com.cesoft.cesnostr.common.LinkifyText
-import com.cesoft.cesnostr.home.vmi.HomeIntent
-import com.cesoft.cesnostr.home.vmi.HomeState
+import com.cesoft.cesnostr.home.mvi.HomeIntent
+import com.cesoft.cesnostr.home.mvi.HomeState
 import com.cesoft.cesnostr.ui.theme.FontSizeMed
 import com.cesoft.cesnostr.ui.theme.SepMax
 import com.cesoft.cesnostr.ui.theme.SepMin

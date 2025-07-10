@@ -20,4 +20,6 @@ interface NostrRepositoryContract {
 
     suspend fun sendFollowList(followList: List<String>): Result<Unit>
     suspend fun fetchFollowList(): Result<List<NostrMetadata>>
+
+    suspend fun searchAuthors(searchText: String): Result<List<NostrEvent>>
 }

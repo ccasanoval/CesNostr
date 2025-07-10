@@ -11,12 +11,11 @@ import androidx.navigation.NavController
 import com.adidas.mvi.compose.MviScreen
 import com.cesoft.cesnostr.common.LoadingCompo
 import com.cesoft.cesnostr.home.HomeViewModel
-import com.cesoft.cesnostr.home.vmi.HomeIntent
-import com.cesoft.cesnostr.home.vmi.HomeState
+import com.cesoft.cesnostr.home.mvi.HomeIntent
+import com.cesoft.cesnostr.home.mvi.HomeState
 import com.cesoft.domain.AppError.NotKnownError
 import com.cesoft.domain.entity.NostrEvent
 import com.cesoft.domain.entity.NostrKindStandard
-import com.cesoft.domain.entity.NostrMetadata
 import java.time.LocalDateTime
 
 internal val TitleHeight = 50.dp
