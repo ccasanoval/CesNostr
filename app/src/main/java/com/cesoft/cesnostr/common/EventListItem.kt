@@ -22,11 +22,14 @@ import androidx.compose.ui.text.style.LineBreak
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.cesoft.cesnostr.R
+import com.cesoft.cesnostr.author.view.AuthorCompo
 import com.cesoft.cesnostr.home.view.AuthorIconSize
 import com.cesoft.cesnostr.home.view.SeparatorHeight
 import com.cesoft.cesnostr.ui.theme.FontSizeMed
 import com.cesoft.cesnostr.ui.theme.SepMin
+import com.cesoft.data.toMetadata
 import com.cesoft.domain.entity.NostrEvent
+import com.cesoft.domain.entity.NostrKindStandard
 import com.cesoft.domain.entity.NostrMetadata
 
 @Composable
@@ -46,13 +49,32 @@ fun EventListItem(event: NostrEvent, onAuthorClick: () -> Unit) {
 
         // Content
         HorizontalDivider()
-        LinkifyText(
-            text = event.content,
-            style = TextStyle.Default.copy(
-                lineBreak = LineBreak.Paragraph,
-                hyphens = Hyphens.Auto
-            )
-        )
+        when(event.kind) {
+            NostrKindStandard.METADATA -> {
+                AuthorCompo(event.toMetadata(event.npub))
+            }
+            /*
+            NostrKindStandard.APPLICATION_SPECIFIC_DATA,
+            NostrKindStandard.CHANNEL_MESSAGE,
+            NostrKindStandard.COMMENT,
+            NostrKindStandard.GENERIC_REPOST,
+            NostrKindStandard.LONG_FORM_TEXT_NOTE,
+            NostrKindStandard.PRIVATE_DIRECT_MESSAGE,
+            NostrKindStandard.REACTION,
+            NostrKindStandard.REPORTING,
+            NostrKindStandard.REPOST,
+            NostrKindStandard.TEXT_NOTE,*/
+            else -> {
+                HorizontalDivider()
+                LinkifyText(
+                    text = event.content,
+                    style = TextStyle.Default.copy(
+                        lineBreak = LineBreak.Paragraph,
+                        hyphens = Hyphens.Auto
+                    )
+                )
+            }
+        }
     }
 }
 

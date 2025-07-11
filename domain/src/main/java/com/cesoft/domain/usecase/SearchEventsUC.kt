@@ -8,6 +8,6 @@ open class SearchEventsUC @Inject constructor(
     private val repository: NostrRepositoryContract
 ) {
     suspend operator fun invoke(searchText: String): Result<List<NostrEvent>> {
-        return repository.searchAuthors(searchText)
+        return repository.search(searchText)
     }
 }

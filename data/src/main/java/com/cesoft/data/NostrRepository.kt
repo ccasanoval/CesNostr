@@ -296,7 +296,7 @@ class NostrRepository @Inject constructor(
         }
     }
 
-    override suspend fun searchAuthors(searchText: String): Result<List<NostrEvent>> {
+    override suspend fun search(searchText: String): Result<List<NostrEvent>> {
         try {
             var keys: Keys? = null
             var client = prefsRepository.readPrivateKey()?.let {
@@ -313,19 +313,26 @@ class NostrRepository @Inject constructor(
             /// Search for events with the searched text
             val filter = Filter()
                 .kinds(listOf(
-                    Kind.fromStd(KindStandard.METADATA),
-                    Kind.fromStd(KindStandard.TEXT_NOTE),
-                    Kind.fromStd(KindStandard.LONG_FORM_TEXT_NOTE),
+                    //Kind.fromStd(KindStandard.CHANNEL_MESSAGE),
+                    //Kind.fromStd(KindStandard.CHANNEL_METADATA),
                     Kind.fromStd(KindStandard.COMMENT),
-                    Kind.fromStd(KindStandard.CHANNEL_MESSAGE),
+                    Kind.fromStd(KindStandard.GENERIC_REPOST),
+                    Kind.fromStd(KindStandard.LONG_FORM_TEXT_NOTE),
+                    Kind.fromStd(KindStandard.METADATA),
+                    //Kind.fromStd(KindStandard.PUBLIC_CHATS),
                     Kind.fromStd(KindStandard.REPOST),
+                    //Kind.fromStd(KindStandard.REPORTING),
+                    Kind.fromStd(KindStandard.REACTION),
+                    //Kind.fromStd(KindStandard.SIMPLE_GROUPS),
+                    Kind.fromStd(KindStandard.TEXT_NOTE),
                 ))
                 .search(searchText)
+                .limit(5UL)
                 //.author(keys!!.publicKey())
             var events: List<Event> = client.fetchEvents(filter, Duration.ofSeconds(2L)).toVec()
 
             /// Search authors of the search result events
-            val authorsPK = events.map { it.author() }
+            val authorsPK = events.map { it.author() }.distinctBy { it.toBech32() }
             val filterMeta = Filter()
                 .kind(Kind.fromStd(KindStandard.METADATA))
                 .authors(authorsPK)
@@ -334,6 +341,7 @@ class NostrRepository @Inject constructor(
 //            for(e in events.toVec()) {
 //                android.util.Log.e(TAG, "searchAuthors------- $e")
 //            }
+            Log.e(TAG, "searchAuthors:----------- ${events.size}")
             return Result.success(events.map { it.toEntity(auths) })
         }
         catch (e: Exception) {

@@ -107,55 +107,7 @@ private fun AuthorInit(
     state: AuthorState.Init,
     reduce: (AuthorIntent) -> Unit
 ) {
-    Row {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(state.metadata.picture)
-                .crossfade(true)
-                .build(),
-            placeholder = painterResource(android.R.drawable.ic_menu_report_image),
-            contentDescription = stringResource(R.string.acc_picture),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.size(AuthorIconSize),
-        )
-        Spacer(Modifier.size(SepMin))
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(state.metadata.banner)
-                .crossfade(true)
-                .build(),
-            placeholder = painterResource(android.R.drawable.ic_menu_report_image),
-            contentDescription = stringResource(R.string.acc_banner),
-            contentScale = ContentScale.Fit,
-            modifier = Modifier//.size(AuthorIconSize),
-        )
-    }
-    Spacer(Modifier.size(SepMed))
-    LazyColumn {
-        item { ItemCompo(stringResource(R.string.public_key), state.metadata.npub) }
-        item { ItemCompo(stringResource(R.string.acc_name), state.metadata.name) }
-        item { ItemCompo(stringResource(R.string.acc_display_name), state.metadata.displayName) }
-        item { ItemCompo(stringResource(R.string.acc_about), state.metadata.about) }
-        item { ItemCompo(stringResource(R.string.acc_picture), state.metadata.picture) }
-        item { ItemCompo(stringResource(R.string.acc_banner), state.metadata.banner) }
-        item { ItemCompo(stringResource(R.string.acc_website), state.metadata.website) }
-        item { ItemCompo(stringResource(R.string.acc_lud16), state.metadata.lud16) }
-        item { ItemCompo(stringResource(R.string.acc_lud06), state.metadata.lud06) }
-        item { ItemCompo(stringResource(R.string.acc_nip05), state.metadata.nip05) }
-    }
-}
-
-@Composable
-private fun ItemCompo(title: String, value: String) {
-    Text(
-        text = title,
-        fontWeight = FontWeight.Bold
-    )
-    LinkifyText(
-        text = value,
-        color = MaterialTheme.colorScheme.secondary
-    )
-    Spacer(Modifier.size(SepMin))
+    AuthorCompo(state.metadata)
 }
 
 //--------------------------------------------------------------------------------------------------
