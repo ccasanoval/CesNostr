@@ -4,13 +4,12 @@ import com.adidas.mvi.sideeffects.SideEffects
 import com.adidas.mvi.transform.SideEffectTransform
 import com.adidas.mvi.transform.ViewTransform
 import com.cesoft.domain.entity.NostrEvent
-import hilt_aggregated_deps._com_cesoft_cesnostr_search_SearchViewModel_HiltModules_KeyModule
 
 internal object SearchTransform {
 
     data object GoLoading : ViewTransform<SearchState, SearchSideEffect>() {
         override fun mutate(currentState: SearchState): SearchState {
-            return SearchState.Loading
+            return SearchState.Loading()
         }
     }
 

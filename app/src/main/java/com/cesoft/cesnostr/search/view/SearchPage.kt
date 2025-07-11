@@ -58,10 +58,10 @@ fun SearchPage(
     ) { state: SearchState ->
         when(state) {
             is SearchState.Loading -> {
-                LoadingCompo()
+                SearchLoading(state = state)
             }
             is SearchState.Init -> {
-                SearchInit(state = state, reduce = viewModel::execute)
+                SearchHeader(state = state, reduce = viewModel::execute)
             }
             is SearchState.Result -> {
                 SearchResult(state = state, reduce = viewModel::execute)
@@ -71,7 +71,13 @@ fun SearchPage(
 }
 
 @Composable
-private fun SearchInit(state: SearchState, reduce: (SearchIntent) -> Unit) {
+private fun SearchLoading(state: SearchState.Loading) {
+    SearchHeader(state) {}
+    LoadingCompo(false)
+}
+
+@Composable
+private fun SearchHeader(state: SearchState, reduce: (SearchIntent) -> Unit) {
     val searchText = remember {
         mutableStateOf(if(state is SearchState.Result) state.searchText else "")
     }
@@ -97,15 +103,16 @@ private fun SearchInit(state: SearchState, reduce: (SearchIntent) -> Unit) {
 }
 
 @Composable
-private fun SearchResult(state: SearchState.Result, reduce: (SearchIntent) -> Unit) {
+private fun SearchResult(state: SearchState, reduce: (SearchIntent) -> Unit) {
     Box(Modifier.fillMaxSize()) {
         SearchResultList(state = state, reduce = reduce)
-        SearchInit(state = state, reduce = reduce)
+        SearchHeader(state = state, reduce = reduce)
     }
 }
 
 @Composable
-fun SearchResultList(state: SearchState.Result, reduce: (SearchIntent) -> Unit) {
+fun SearchResultList(state: SearchState, reduce: (SearchIntent) -> Unit) {
+    if(state !is SearchState.Result)return
     if(state.events.isEmpty()) {
         Text(
             text = stringResource(R.string.error_not_found),
@@ -150,5 +157,13 @@ private fun SearchPage_Empty_Preview() {
     )
     Surface {
         SearchResult(state = state) {}
+    }
+}
+@Preview
+@Composable
+private fun SearchPage_Loading_Preview() {
+    val state = SearchState.Loading(searchText = "Test")
+    Surface {
+        SearchLoading(state = state)
     }
 }
