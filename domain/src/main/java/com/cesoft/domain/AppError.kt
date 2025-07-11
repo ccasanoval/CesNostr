@@ -8,6 +8,7 @@ sealed class AppError: Throwable() {
 
     data class InternalError(val code: Int = 0, val msg: String = ""): AppError()
     data class NetworkException(val code: Int = 0, val msg: String = ""): AppError()
+    data class NostrError(val failed: Map<String, String>): AppError()
 
     data object NotFound: AppError() {
         private fun readResolve(): Any = NotFound

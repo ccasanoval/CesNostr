@@ -350,7 +350,44 @@ class NostrRepository @Inject constructor(
         }
     }
 
+    suspend fun sendPrivateMsg(
+        npub: String,
+        msg: String
+    ): Result<Unit> {
+        try {
+            var keys: Keys? = null
+            var client = prefsRepository.readPrivateKey()?.let {
+                keys = Keys.parse(it)
+                val signer = NostrSigner.keys(keys)
+                Client(signer = signer)
+            } ?: run {
+                //Client()
+                return Result.failure(AppError.InvalidNostrKey)
+            }
+            addRelays(client)
+            client.connect()
+
+            val out: SendEventOutput = client.sendPrivateMsg(
+                receiver = PublicKey.parse(npub),
+                message = msg,
+            )
+            val errors = out.failed
+            if(errors.isNotEmpty()) {
+                for(e in errors) Log.e(TAG, "sendPrivateMsg:e:------------- ${e.key} = ${e.value}")
+                return Result.failure(AppError.NostrError(errors))
+            }
+            else {
+                return Result.success(Unit)
+            }
+        }
+        catch (e: Exception) {
+            Log.e(TAG, "searchAuthors:e:----------- $e")
+            return Result.failure(e)
+        }
+    }
+
     companion object {
         const val TAG = "NostrRepo"
     }
 }
+

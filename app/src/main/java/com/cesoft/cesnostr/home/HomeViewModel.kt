@@ -63,7 +63,8 @@ class HomeViewModel @Inject constructor(
     private suspend fun fetch(): HomeTransform.GoInit {
         //TODO: List of authors to follow...
         val authList = listOf(
-            "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",//CES
+            "npub14zksm35smcqxaz6sg7etz7cqvdc2hwtl0ddgfptg7gldu2ej9dkqem2qhf",//Cesar2501
+            "npub1e3grdtr7l8rfadmcpepee4gz8l00em7qdm8a732u5f5gphld3hcsnt0q7k",//Opus2501
             "npub15tzcpmvkdlcn62264d20ype7ye67dch89k8qwyg9p6hjg0dk28qs353ywv",//BTC
         )
         val res: Result<List<NostrEvent>> = getEvents(
